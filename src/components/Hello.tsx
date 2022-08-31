@@ -1,5 +1,9 @@
 const Hello = () => {
-  return <div>Hello, World</div>
+  return (
+    <div className={'text-3xl font-bold hover:underline text-center'}>
+      Hello, World
+    </div>
+  )
 }
 
 export default Hello
