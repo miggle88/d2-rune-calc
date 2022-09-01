@@ -12,7 +12,7 @@ const MasterDetailLayout = (props: MasterDetailLayoutProps) => {
 
   return (
     <div className={'h-screen w-screen flex flex-row'}>
-      <div className={'w-1/3'}>{masterChild}</div>
+      <div className={'w-1/3 bg-red-900'}>{masterChild}</div>
       <div className={'w-2/3'}>{detailChild}</div>
     </div>
   )

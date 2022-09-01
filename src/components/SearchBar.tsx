@@ -1,0 +1,30 @@
+type SearchBarProps = {
+  value?: string
+  onChange?: (value: string) => void
+}
+
+const SearchBar = (props: SearchBarProps) => {
+  return (
+    <div className={'bg-sky-500 flex flex-row'}>
+      <input
+        type={'text'}
+        className={
+          'flex-grow p-3 appearance-none bg-gray-800 placeholder-gray-500'
+        }
+        value={props.value ?? ''}
+        onChange={(e) => props.onChange && props.onChange(e.target.value)}
+        placeholder={'Search...'}
+      />
+      <input
+        type={'button'}
+        className={
+          'min-w-[48px] min-h-[32px] appearance-none bg-gray-600 hover:bg-gray-500 active:bg-gray-400 cursor-pointer'
+        }
+        value={'X'}
+        onClick={() => props.onChange && props.onChange('')}
+      />
+    </div>
+  )
+}
+
+export default SearchBar
