@@ -10,18 +10,11 @@ type ToggleButtonProps = {
 const ToggleButton = (props: ToggleButtonProps) => {
   const checkboxRef = useRef<HTMLInputElement>(null)
 
-  const style =
-    checkboxRef.current && checkboxRef.current.checked
-      ? props.activeClassName
-      : props.className
+  const style = checkboxRef.current && checkboxRef.current.checked ? props.activeClassName : props.className
 
   return (
     <div>
-      <input
-        ref={checkboxRef}
-        type={'checkbox'}
-        className={'appearance-none hidden'}
-      />
+      <input ref={checkboxRef} type={'checkbox'} className={'appearance-none hidden'} />
       <button
         className={style}
         onClick={() => {

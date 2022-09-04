@@ -1,4 +1,4 @@
-import SelectableChoice from '@/components/SelectableChoice'
+import SelectableChoice from '@/components/common/SelectableChoice'
 
 type MultiSelectGroupProps = {
   selected: string[]
