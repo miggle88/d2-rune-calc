@@ -4,7 +4,7 @@ import Head from 'next/head'
 import NavBar from '@/components/navigation/NavBar'
 
 import 'tailwindcss/tailwind.css'
-import '../../styles/globals.css'
+import '@/styles/globals.css'
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -14,10 +14,7 @@ function App({ Component, pageProps }: AppProps) {
         <link rel={'icon'} href={'/favicon.ico'} />
         <meta charSet={'UTF-8'} />
         <meta name={'author'} content={'Mike Rogers'} />
-        <meta
-          name={'viewport'}
-          content={'initial-scale=1.0, width=device-width'}
-        />
+        <meta name={'viewport'} content={'initial-scale=1.0, width=device-width'} />
       </Head>
       <NavBar />
       <Component {...pageProps} />
