@@ -15,14 +15,14 @@ const SearchBar = (props: SearchBarProps) => {
         onChange={(e) => props.onChange && props.onChange(e.target.value)}
         placeholder={'Search...'}
       />
-      <input
-        type={'button'}
+      <button
         className={
-          'min-w-[48px] min-h-[32px] appearance-none bg-gray-600 hover:bg-gray-500 active:bg-gray-400 cursor-pointer'
+          'min-w-[48px] min-h-[32px] appearance-none bg-gray-600 hover:bg-gray-500 active:bg-gray-400'
         }
-        value={'X'}
         onClick={() => props.onChange && props.onChange('')}
-      />
+      >
+        X
+      </button>
     </div>
   )
 }
