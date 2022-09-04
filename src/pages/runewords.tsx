@@ -28,7 +28,7 @@ const Runewords: NextPage = () => {
       if (itemTypeFilters.length > 0 && !hasCommonElement(runeword.types, itemTypeFilters)) {
         return false
       }
-      if (subTypeFilters.length > 0 && runeword.subTypes && !hasCommonElement(runeword.subTypes, subTypeFilters)) {
+      if (subTypeFilters.length > 0 && (!runeword.subTypes || !hasCommonElement(runeword.subTypes, subTypeFilters))) {
         return false
       }
       if (socketFilters.length > 0 && !hasCommonElement([runeword.runes.length.toString()], socketFilters)) {
