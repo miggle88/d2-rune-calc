@@ -7,6 +7,10 @@ type RunewordListProps = {
 }
 
 const RunewordList = (props: RunewordListProps) => {
+  if (props.runewords.length < 1) {
+    return <div className={'text-center text-red-500 p-3'}>No Runewords Found</div>
+  }
+
   return (
     <div className={'bg-red-900 flex flex-col'}>
       {props.runewords.map((runeword) => {

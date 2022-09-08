@@ -2,7 +2,6 @@ import assert from 'assert'
 import React from 'react'
 
 type MasterDetailLayoutProps = {
-  something: boolean
   children: React.ReactNode[]
 }
 

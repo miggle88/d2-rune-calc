@@ -1,3 +1,4 @@
+import RunewordDetail from '@/components/runewords/RunewordDetail'
 import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
 import SearchBar from '@/components/common/SearchBar'
@@ -15,10 +16,11 @@ const ALL_SOCKET_FILTERS = ['2', '3', '4', '5', '6']
 
 const Runewords: NextPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [itemTypeFilters, setItemTypeFilters] = useState([] as string[])
-  const [subTypeFilters, setSubTypeFilters] = useState([] as string[])
-  const [socketFilters, setSocketFilters] = useState([] as string[])
-  const [filteredRunewords, setFilteredRunewords] = useState([...AllRunewords])
+  const [itemTypeFilters, setItemTypeFilters] = useState<string[]>([])
+  const [subTypeFilters, setSubTypeFilters] = useState<string[]>([])
+  const [socketFilters, setSocketFilters] = useState<string[]>([])
+  const [filteredRunewords, setFilteredRunewords] = useState<Runeword[]>([...AllRunewords])
+  const [selectedRuneword, setSelectedRuneword] = useState<Runeword | undefined>()
 
   useEffect(() => {
     const newFilteredRunewordList = AllRunewords.filter((runeword) => {
@@ -28,7 +30,7 @@ const Runewords: NextPage = () => {
       if (itemTypeFilters.length > 0 && !hasCommonElement(runeword.types, itemTypeFilters)) {
         return false
       }
-      if (subTypeFilters.length > 0 && runeword.subTypes && !hasCommonElement(runeword.subTypes, subTypeFilters)) {
+      if (subTypeFilters.length > 0 && (!runeword.subTypes || !hasCommonElement(runeword.subTypes, subTypeFilters))) {
         return false
       }
       if (socketFilters.length > 0 && !hasCommonElement([runeword.runes.length.toString()], socketFilters)) {
@@ -42,11 +44,12 @@ const Runewords: NextPage = () => {
   }, [searchTerm, itemTypeFilters, subTypeFilters, socketFilters])
 
   const onSearchTermChanged = (newSearchTerm: string) => {
+    console.log(`searchTerm: '${searchTerm}'`)
     setSearchTerm(newSearchTerm)
   }
   const onItemTypeFilterChanged = (selected: string[]) => {
-    setItemTypeFilters(selected)
     console.log(`itemTypeFilters: [${selected}]`)
+    setItemTypeFilters(selected)
   }
 
   const onSubTypeFilterChanged = (selected: string[]) => {
@@ -60,12 +63,13 @@ const Runewords: NextPage = () => {
   }
 
   const onRunewordClicked = (runeword: Runeword) => {
-    console.log(`runewordClicked: ${runeword.name}`)
+    console.log(`runewordClicked: '${runeword.name}'`)
+    setSelectedRuneword(runeword)
   }
 
   return (
-    <MasterDetailLayout something={true}>
-      <div id={'master'} className={'border-gray-500 border-r-2'}>
+    <MasterDetailLayout>
+      <div className={'border-gray-500 border-r-2 h-screen'}>
         <SearchBar value={searchTerm} onChange={onSearchTermChanged} />
         <div className={'text-xl px-2 pt-2'}>Item Types</div>
         <MultiSelectGroup selected={itemTypeFilters} choices={ALL_ITEM_TYPES} onChange={onItemTypeFilterChanged} />
@@ -76,7 +80,9 @@ const Runewords: NextPage = () => {
         <div className={'border-gray-500 border-b-2'} />
         <RunewordList runewords={filteredRunewords} onClick={onRunewordClicked} />
       </div>
-      <div id={'detail'}>Detail View</div>
+      <div className={'h-screen'}>
+        <RunewordDetail runeword={selectedRuneword} />
+      </div>
     </MasterDetailLayout>
   )
 }
