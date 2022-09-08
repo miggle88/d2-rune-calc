@@ -1,4 +1,5 @@
 export type Rune = {
+  key: string
   name: string
   charLevel: number
 }
