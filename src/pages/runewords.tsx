@@ -68,8 +68,8 @@ const Runewords: NextPage = () => {
   }
 
   return (
-    <MasterDetailLayout something={true}>
-      <div id={'master'} className={'border-gray-500 border-r-2'}>
+    <MasterDetailLayout>
+      <div className={'border-gray-500 border-r-2 h-screen'}>
         <SearchBar value={searchTerm} onChange={onSearchTermChanged} />
         <div className={'text-xl px-2 pt-2'}>Item Types</div>
         <MultiSelectGroup selected={itemTypeFilters} choices={ALL_ITEM_TYPES} onChange={onItemTypeFilterChanged} />
@@ -80,7 +80,7 @@ const Runewords: NextPage = () => {
         <div className={'border-gray-500 border-b-2'} />
         <RunewordList runewords={filteredRunewords} onClick={onRunewordClicked} />
       </div>
-      <div id={'detail'}>
+      <div className={'h-screen'}>
         <RunewordDetail runeword={selectedRuneword} />
       </div>
     </MasterDetailLayout>
