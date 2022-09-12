@@ -1,8 +1,8 @@
 import assert from 'assert'
-import React from 'react'
+import { ReactNode } from 'react'
 
 type MasterDetailLayoutProps = {
-  children: React.ReactNode[]
+  children: ReactNode[]
 }
 
 const MasterDetailLayout = (props: MasterDetailLayoutProps) => {
