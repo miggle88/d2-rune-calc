@@ -1,4 +1,4 @@
-import { Rune } from '@/types'
+import { Rune, RuneInventory } from '@/types'
 import AllRunes from '@/data/runes'
 
 export function getHighestRune(runes: string[]): Rune | undefined {
@@ -16,4 +16,12 @@ export function getHighestRune(runes: string[]): Rune | undefined {
     })
 
   return sortedRunes.length ? sortedRunes[0] : undefined
+}
+
+export function createInventory(runes: string[], initialValue = 0): RuneInventory {
+  const runeInventory = {} as RuneInventory
+  for (const key of runes) {
+    runeInventory[key] = initialValue
+  }
+  return runeInventory
 }

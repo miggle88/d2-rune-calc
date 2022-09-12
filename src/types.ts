@@ -1,8 +1,12 @@
+import exp from 'constants'
+
 export type Rune = {
   key: string
   name: string
   charLevel: number
 }
+
+export type RuneInventory = Record<string, number>
 
 export type Runeword = {
   name: string
