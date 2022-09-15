@@ -1,6 +1,7 @@
 import NumericInput from '@/components/common/NumericInput'
+import Conditional from '@/components/layout/Conditional'
 
-const NORMAL_STYLE = 'font-bold text-sm w-[32px] h-[36px] p-0 border-gray-500'
+const NORMAL_STYLE = 'font-bold text-sm w-[36px] h-full p-0 border-gray-500'
 const HOVER_STYLE = 'hover:border-gray-600 hover:bg-gray-800'
 const ACTIVE_STYLE = 'active:bg-red-800 active:border-red-600'
 const FOCUS_STYLE = ''
@@ -11,6 +12,7 @@ type RuneQuantityProps = {
   name: string
   amount: number
   onChange?: (value: number) => void
+  isReadOnly?: boolean
 }
 
 const RuneQuantity = (props: RuneQuantityProps) => {
@@ -37,19 +39,23 @@ const RuneQuantity = (props: RuneQuantityProps) => {
       <div
         className={'flex flex-row group justify-between border-gray-500 border-2 rounded focus-within:border-red-600'}
       >
-        <button className={`${BUTTON_STYLE} border-r-2 rounded-none`} onClick={(e) => decrement(e.shiftKey)}>
-          <span>{'-'}</span>
-        </button>
+        <Conditional condition={!props.isReadOnly}>
+          <button className={`${BUTTON_STYLE} border-r-2 rounded-none`} onClick={(e) => decrement(e.shiftKey)}>
+            <span>{'-'}</span>
+          </button>
+        </Conditional>
         <NumericInput
           minValue={0}
           maxValue={999}
           value={props.amount}
-          className={`h-[36px] w-[48px] p-0 border-0 hover:border-0 focus:border-0 ${TEXT_STYLE}`}
+          className={`h-full w-full py-2 border-0 hover:border-0 focus:border-0 ${TEXT_STYLE}`}
           onChange={props.onChange}
         />
-        <button className={`${BUTTON_STYLE} border-l-2 rounded-none`} onClick={(e) => increment(e.shiftKey)}>
-          <span>{'+'}</span>
-        </button>
+        <Conditional condition={!props.isReadOnly}>
+          <button className={`${BUTTON_STYLE} border-l-2 rounded-none`} onClick={(e) => increment(e.shiftKey)}>
+            <span>{'+'}</span>
+          </button>
+        </Conditional>
       </div>
     </div>
   )

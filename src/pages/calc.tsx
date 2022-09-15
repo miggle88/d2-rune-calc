@@ -1,4 +1,5 @@
 import RuneInventoryDisplay from '@/components/calc/RuneInventoryDisplay'
+import RuneResults from '@/components/calc/RuneResults'
 import Button from '@/components/common/Button'
 import { createInventory, getHighestRune } from '@/utils/runes'
 import { useState } from 'react'
@@ -83,6 +84,10 @@ const Calc: NextPage = () => {
             setMaxRune(highestRune ?? DEFAULT_MAX_RUNE)
           }}
         />
+        <div className={'flex flex-col'}>
+          <div className={'text-center p-3 text-2xl'}>Runes Needed</div>
+          <RuneResults runes={runeInventory} />
+        </div>
       </div>
     </MasterDetailLayout>
   )
