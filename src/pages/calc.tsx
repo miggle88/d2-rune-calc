@@ -1,10 +1,11 @@
 import RuneInventoryDisplay from '@/components/calc/RuneInventoryDisplay'
-import RuneResults from '@/components/calc/RuneResults'
+import CalculatorResultsDisplay from '@/components/calc/CalculatorResultsDisplay'
 import Button from '@/components/common/Button'
-import { createInventory, getHighestRune } from '@/utils/runes'
-import { useState } from 'react'
+import { calculateRunesNeeded } from '@/utils/calculator'
+import { createInventory, getHighestRune, getLowestRune, getPreviousRune, lookupRunes } from '@/utils/runes'
+import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
-import { Rune, RuneInventory, Runeword } from '@/types'
+import { Rune, RuneCalculation, RuneInventory, Runeword } from '@/types'
 import RuneRangeSelector from '@/components/calc/RuneRangeSelector'
 import RunewordDisplay from '@/components/calc/RunewordDisplay'
 import MasterDetailLayout from '@/components/layout/MasterDetailLayout'
@@ -13,24 +14,42 @@ import AllRunewords from '@/data/runewords'
 import AllRunes from '@/data/runes'
 
 const ALL_RUNE_NAMES = AllRunes.map((r) => r.name)
-const DEFAULT_MIN_RUNE = AllRunes.find((r) => r.key === 'el')
-const DEFAULT_MAX_RUNE = AllRunes.find((r) => r.key === 'zod')
+const DEFAULT_MIN_RUNE = AllRunes.find((r) => r.key === 'el')!
 
 const Calc: NextPage = () => {
   const [selectedRuneword, setSelectedRuneword] = useState<Runeword | undefined>()
   const [zeroQuantityVisibility, setZeroQuantityVisibility] = useState<boolean>(true)
   const [runeInventory, setRuneInventory] = useState<RuneInventory>(createInventory(ALL_RUNE_NAMES))
-  const [minRune, setMinRune] = useState<Rune | undefined>(DEFAULT_MIN_RUNE)
-  const [maxRune, setMaxRune] = useState<Rune | undefined>(DEFAULT_MAX_RUNE)
+  const [minRune, setMinRune] = useState<Rune>(DEFAULT_MIN_RUNE)
+  const [calculatorResults, setCalculatorResults] = useState<RuneCalculation[]>([])
 
-  const onRunewordClicked = (runeword: Runeword) => {
-    setSelectedRuneword(runeword)
-
-    const highestRune = getHighestRune(runeword?.runes ?? [])
-    if (highestRune) {
-      setMaxRune(highestRune)
+  // Automatically set min/max rune range when selecting a runeword
+  useEffect(() => {
+    if (!selectedRuneword) {
+      return
     }
-  }
+
+    const lowestRune = getLowestRune(selectedRuneword.runes)
+    if (lowestRune) {
+      const newMinRune = getPreviousRune(lowestRune, 2) ?? DEFAULT_MIN_RUNE
+      setMinRune(newMinRune)
+    }
+  }, [selectedRuneword])
+
+  // Recalculate results when anything on calculator changes
+  useEffect(() => {
+    if (!selectedRuneword) {
+      return
+    }
+
+    const newRunesNeeded = calculateRunesNeeded({
+      minRune: minRune,
+      runes: lookupRunes(selectedRuneword.runes),
+      inventory: runeInventory,
+    })
+
+    setCalculatorResults(newRunesNeeded)
+  }, [selectedRuneword, runeInventory, minRune])
 
   const onRuneInventoryChanged = (key: string, newAmount: number) => {
     const newInventory = { ...runeInventory, [key]: newAmount }
@@ -40,7 +59,7 @@ const Calc: NextPage = () => {
   return (
     <MasterDetailLayout>
       <div>
-        <RunewordList runewords={AllRunewords} onClick={onRunewordClicked} />
+        <RunewordList runewords={AllRunewords} onClick={setSelectedRuneword} />
       </div>
       <div>
         <div className={'flex flex-col text-center'}>
@@ -75,18 +94,23 @@ const Calc: NextPage = () => {
         <RunewordDisplay runeword={selectedRuneword} />
         <RuneRangeSelector
           minRune={minRune}
-          maxRune={maxRune}
           onMinRuneChanged={setMinRune}
-          onMaxRuneChanged={setMaxRune}
           onResetClicked={() => {
-            const highestRune = getHighestRune(selectedRuneword?.runes ?? [])
-            setMinRune(DEFAULT_MIN_RUNE)
-            setMaxRune(highestRune ?? DEFAULT_MAX_RUNE)
+            if (!selectedRuneword) {
+              setMinRune(DEFAULT_MIN_RUNE)
+              return
+            }
+
+            const lowestRune = getLowestRune(selectedRuneword.runes)
+            if (lowestRune) {
+              const newMinRune = getPreviousRune(lowestRune, 2) ?? DEFAULT_MIN_RUNE
+              setMinRune(newMinRune)
+            }
           }}
         />
         <div className={'flex flex-col'}>
           <div className={'text-center p-3 text-2xl'}>Runes Needed</div>
-          <RuneResults runes={runeInventory} />
+          <CalculatorResultsDisplay results={calculatorResults} />
         </div>
       </div>
     </MasterDetailLayout>

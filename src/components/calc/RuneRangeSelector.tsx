@@ -8,9 +8,7 @@ const DROPDOWN_STYLE =
 
 type RuneRangeSelectorProps = {
   minRune?: Rune
-  maxRune?: Rune
   onMinRuneChanged?: (rune: Rune) => void
-  onMaxRuneChanged?: (rune: Rune) => void
   onResetClicked?: () => void
 }
 
@@ -19,13 +17,6 @@ const RuneRangeSelector = (props: RuneRangeSelectorProps) => {
     const rune = AllRunes.find((r) => r.key === e.target.value)
     if (rune && props.onMinRuneChanged) {
       props.onMinRuneChanged(rune)
-    }
-  }
-
-  const onMaxRuneChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const rune = AllRunes.find((r) => r.key === e.target.value)
-    if (rune && props.onMaxRuneChanged) {
-      props.onMaxRuneChanged(rune)
     }
   }
 
@@ -39,18 +30,6 @@ const RuneRangeSelector = (props: RuneRangeSelectorProps) => {
             {AllRunes.map((rune) => {
               return (
                 <option key={`min-${rune.key}`} value={rune.key}>
-                  {rune.name}
-                </option>
-              )
-            })}
-          </select>
-        </div>
-        <div>
-          <span className={'px-6 py-3'}>Max Rune:</span>
-          <select onChange={onMaxRuneChanged} value={props.maxRune?.key} className={DROPDOWN_STYLE}>
-            {AllRunes.map((rune) => {
-              return (
-                <option key={`max-${rune.key}`} value={rune.key}>
                   {rune.name}
                 </option>
               )
