@@ -8,9 +8,7 @@ const DROPDOWN_STYLE =
 
 type RuneRangeSelectorProps = {
   minRune?: Rune
-  maxRune?: Rune
   onMinRuneChanged?: (rune: Rune) => void
-  onMaxRuneChanged?: (rune: Rune) => void
   onResetClicked?: () => void
 }
 
@@ -19,13 +17,6 @@ const RuneRangeSelector = (props: RuneRangeSelectorProps) => {
     const rune = AllRunes.find((r) => r.key === e.target.value)
     if (rune && props.onMinRuneChanged) {
       props.onMinRuneChanged(rune)
-    }
-  }
-
-  const onMaxRuneChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const rune = AllRunes.find((r) => r.key === e.target.value)
-    if (rune && props.onMaxRuneChanged) {
-      props.onMaxRuneChanged(rune)
     }
   }
 
@@ -45,25 +36,8 @@ const RuneRangeSelector = (props: RuneRangeSelectorProps) => {
             })}
           </select>
         </div>
-        <div>
-          <span className={'px-6 py-3'}>Max Rune:</span>
-          <select onChange={onMaxRuneChanged} value={props.maxRune?.key} className={DROPDOWN_STYLE}>
-            {AllRunes.map((rune) => {
-              return (
-                <option key={`max-${rune.key}`} value={rune.key}>
-                  {rune.name}
-                </option>
-              )
-            })}
-          </select>
-        </div>
         <div className={'px-6 py-3'} />
-        <Button
-          className={
-            'border-2 border-red-600 rounded p-2 focus:ring-0 focus:border-red-400 focus:border-red-400 active:bg-red-900 min-w-[120px] min-h-[48px]'
-          }
-          onClick={() => props.onResetClicked && props.onResetClicked()}
-        >
+        <Button className={'min-w-[120px] min-h-[48px]'} onClick={() => props.onResetClicked && props.onResetClicked()}>
           <span className={'text-red-400 text-xl p-2'}>Reset</span>
         </Button>
       </div>

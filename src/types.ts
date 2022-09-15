@@ -1,9 +1,8 @@
-import exp from 'constants'
-
 export type Rune = {
   key: string
   name: string
   charLevel: number
+  index: number
 }
 
 export type RuneInventory = Record<string, number>
@@ -37,4 +36,15 @@ export enum ItemSubType {
   Hammer = 'Hammer',
   Scepter = 'Scepter',
   Sword = 'Sword',
+}
+
+export type CalculatorParameters = {
+  minRune: Rune
+  runes: Rune[]
+  inventory: RuneInventory
+}
+
+export type RuneCalculation = {
+  rune: Rune
+  requires: RuneInventory
 }
