@@ -1,5 +1,5 @@
 import RuneInventoryDisplay from '@/components/calc/RuneInventoryDisplay'
-import ToggleButton from '@/components/common/ToggleButton'
+import Button from '@/components/common/Button'
 import { createInventory, getHighestRune } from '@/utils/runes'
 import { useState } from 'react'
 import type { NextPage } from 'next'
@@ -44,7 +44,7 @@ const Calc: NextPage = () => {
       <div>
         <div className={'flex flex-col text-center'}>
           <div className={'p-3 text-2xl'}>Runes Collected</div>
-          <div>
+          <div className={'flex flex-row justify-center'}>
             <input
               type={'checkbox'}
               checked={zeroQuantityVisibility}
@@ -54,7 +54,16 @@ const Calc: NextPage = () => {
               onChange={(e) => setZeroQuantityVisibility(e.target.checked)}
             />
             <span className={'text-xl px-3 py-1 text-center align-middle'}>Show Zero Quantities</span>
-            <div className={'pb-3'} />
+            <div className={'pr-3'} />
+            <Button
+              className={''}
+              onClick={() => {
+                const blankInventory = createInventory(ALL_RUNE_NAMES)
+                setRuneInventory(blankInventory)
+              }}
+            >
+              <span className={'text-red-400 text-xl p-2'}>Reset Rune Inventory</span>
+            </Button>
           </div>
           <RuneInventoryDisplay
             runes={runeInventory}

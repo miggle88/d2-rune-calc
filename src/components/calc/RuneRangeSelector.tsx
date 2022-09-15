@@ -58,12 +58,7 @@ const RuneRangeSelector = (props: RuneRangeSelectorProps) => {
           </select>
         </div>
         <div className={'px-6 py-3'} />
-        <Button
-          className={
-            'border-2 border-red-600 rounded p-2 focus:ring-0 focus:border-red-400 focus:border-red-400 active:bg-red-900 min-w-[120px] min-h-[48px]'
-          }
-          onClick={() => props.onResetClicked && props.onResetClicked()}
-        >
+        <Button className={'min-w-[120px] min-h-[48px]'} onClick={() => props.onResetClicked && props.onResetClicked()}>
           <span className={'text-red-400 text-xl p-2'}>Reset</span>
         </Button>
       </div>
