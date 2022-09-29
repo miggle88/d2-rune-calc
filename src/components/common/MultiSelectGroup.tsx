@@ -24,6 +24,7 @@ const MultiSelectGroup = (props: MultiSelectGroupProps) => {
         return (
           <SelectableChoice
             key={choice}
+            isChecked={props.selected.includes(choice)}
             onChange={(isChecked) => {
               onChoiceChanged(choice, isChecked)
             }}
