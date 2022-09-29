@@ -59,7 +59,7 @@ const Runewords: NextPage<RunewordsContext> = (context) => {
 
   useEffect(() => {
     const newFilteredRunewordList = AllRunewords.filter((runeword) => {
-      if (!runeword.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+      if (!runeword.name.toLowerCase().includes(searchTerm.toLowerCase().trim())) {
         return false
       }
       if (itemTypeFilters.length > 0 && !hasCommonElement(runeword.types, itemTypeFilters)) {
