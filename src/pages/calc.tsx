@@ -41,11 +41,18 @@ const Calc: NextPage<CalcContext> = (context) => {
         setSelectedRuneword(runeword)
       }
     }
+    if (typeof context.query.minRune === 'string') {
+      const rune = AllRunes.find((r) => slugify(r.name).toLowerCase() === context.query.minRune)
+      if (rune) {
+        console.log(`setting min rune to '${rune.name}' (${context.query.minRune})`)
+        setMinRune(rune)
+      }
+    }
   }, [])
 
   // Automatically set min/max rune range when selecting a runeword
   useEffect(() => {
-    if (!selectedRuneword) {
+    if (!selectedRuneword || context.query.minRune) {
       return
     }
 
@@ -74,8 +81,9 @@ const Calc: NextPage<CalcContext> = (context) => {
   useEffect(() => {
     setQuery({
       selected: selectedRuneword ? slugify(selectedRuneword.name).toLowerCase() : null,
+      minRune: slugify(minRune.name).toLowerCase(),
     })
-  }, [selectedRuneword])
+  }, [selectedRuneword, minRune])
 
   const onRuneInventoryChanged = (key: string, newAmount: number) => {
     const newInventory = { ...runeInventory, [key]: newAmount }
