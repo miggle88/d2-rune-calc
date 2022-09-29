@@ -18,10 +18,11 @@ const useSearchQuery = () => {
       return { ...output, [key]: trimmedValue }
     }, {})
 
-    router.replace({
+    const url = {
       pathname: router.pathname,
       query: filteredParams,
-    })
+    }
+    router.replace(url, url, { shallow: true })
   }
   return {
     isReady: router.isReady,
