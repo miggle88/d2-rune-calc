@@ -21,7 +21,7 @@ type RunewordsContext = {
   query: ParsedUrlQuery
 }
 
-const Runewords: NextPage<RunewordsContext> = (context: RunewordsContext) => {
+const Runewords: NextPage<RunewordsContext> = (context) => {
   const { setQuery } = useSearchQuery()
   const [searchTerm, setSearchTerm] = useState('')
   const [itemTypeFilters, setItemTypeFilters] = useState<string[]>([])
@@ -32,7 +32,6 @@ const Runewords: NextPage<RunewordsContext> = (context: RunewordsContext) => {
 
   useEffect(() => {
     const { selected, term, types, subTypes, sockets } = context.query
-    console.log(context.query)
     if (typeof selected === 'string' && selected.trim()) {
       const runeword = AllRunewords.find((r) => slugify(r.name).toLowerCase() === selected)
       if (runeword) {
