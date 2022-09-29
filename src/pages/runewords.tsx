@@ -1,10 +1,13 @@
-import RunewordDetail from '@/components/runewords/RunewordDetail'
+import { ParsedUrlQuery } from 'querystring'
 import { useEffect, useState } from 'react'
-import type { NextPage } from 'next'
+import slugify from 'slugify'
+import type { GetServerSidePropsContext, NextPage } from 'next'
 import SearchBar from '@/components/common/SearchBar'
 import MultiSelectGroup from '@/components/common/MultiSelectGroup'
 import MasterDetailLayout from '@/components/layout/MasterDetailLayout'
 import RunewordList from '@/components/runewords/RunewordList'
+import RunewordDetail from '@/components/runewords/RunewordDetail'
+import useSearchQuery from '@/hooks/useSearchQuery'
 import AllRunewords from '@/data/runewords'
 import { ItemSubType, ItemType, Runeword } from '@/types'
 import { hasCommonElement } from '@/utils/arrays'
@@ -14,13 +17,46 @@ const ALL_ITEM_TYPES = Object.values(ItemType)
 const ALL_SUB_TYPES = Object.values(ItemSubType)
 const ALL_SOCKET_FILTERS = ['2', '3', '4', '5', '6']
 
-const Runewords: NextPage = () => {
+type RunewordsContext = {
+  query: ParsedUrlQuery
+}
+
+const Runewords: NextPage<RunewordsContext> = (context: RunewordsContext) => {
+  const { setQuery } = useSearchQuery()
   const [searchTerm, setSearchTerm] = useState('')
   const [itemTypeFilters, setItemTypeFilters] = useState<string[]>([])
   const [subTypeFilters, setSubTypeFilters] = useState<string[]>([])
   const [socketFilters, setSocketFilters] = useState<string[]>([])
   const [filteredRunewords, setFilteredRunewords] = useState<Runeword[]>([...AllRunewords])
   const [selectedRuneword, setSelectedRuneword] = useState<Runeword | undefined>()
+
+  useEffect(() => {
+    const { selected, term, types, subTypes, sockets } = context.query
+    console.log(context.query)
+    if (typeof selected === 'string' && selected.trim()) {
+      const runeword = AllRunewords.find((r) => slugify(r.name).toLowerCase() === selected)
+      if (runeword) {
+        console.log(`setting selected runeword to '${runeword.name}' (${selected})`)
+        setSelectedRuneword(runeword)
+      }
+    }
+    if (typeof term === 'string' && term.trim()) {
+      console.log(`setting search term to '${term}'`)
+      setSearchTerm(term)
+    }
+    if (typeof types === 'string' && types.trim()) {
+      console.log(`setting type filters to '${types}'`)
+      setItemTypeFilters(types.split(','))
+    }
+    if (typeof subTypes === 'string' && subTypes.trim()) {
+      console.log(`setting subType filters to '${subTypes}'`)
+      setSubTypeFilters(subTypes.split(','))
+    }
+    if (typeof sockets === 'string' && sockets.trim()) {
+      console.log(`setting socket filters to '${sockets}'`)
+      setSocketFilters(sockets.split(','))
+    }
+  }, [])
 
   useEffect(() => {
     const newFilteredRunewordList = AllRunewords.filter((runeword) => {
@@ -43,27 +79,32 @@ const Runewords: NextPage = () => {
     setFilteredRunewords(newFilteredRunewordList)
   }, [searchTerm, itemTypeFilters, subTypeFilters, socketFilters])
 
+  useEffect(() => {
+    setQuery({
+      selected: selectedRuneword ? slugify(selectedRuneword.name).toLowerCase() : null,
+      term: searchTerm,
+      types: itemTypeFilters.join(','),
+      subTypes: subTypeFilters.join(','),
+      sockets: socketFilters.join(','),
+    })
+  }, [selectedRuneword, searchTerm, itemTypeFilters, subTypeFilters, socketFilters])
+
   const onSearchTermChanged = (newSearchTerm: string) => {
-    console.log(`searchTerm: '${searchTerm}'`)
     setSearchTerm(newSearchTerm)
   }
   const onItemTypeFilterChanged = (selected: string[]) => {
-    console.log(`itemTypeFilters: [${selected}]`)
     setItemTypeFilters(selected)
   }
 
   const onSubTypeFilterChanged = (selected: string[]) => {
-    console.log(`subTypeFilters: [${selected}]`)
     setSubTypeFilters(selected)
   }
 
   const onSocketFilterChanged = (selected: string[]) => {
-    console.log(`socketFilters: [${selected}]`)
     setSocketFilters(selected)
   }
 
   const onRunewordClicked = (runeword: Runeword) => {
-    console.log(`runewordClicked: '${runeword.name}'`)
     setSelectedRuneword(runeword)
   }
 
@@ -85,6 +126,15 @@ const Runewords: NextPage = () => {
       </div>
     </MasterDetailLayout>
   )
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const query = context.query
+  return {
+    props: {
+      query,
+    },
+  }
 }
 
 export default Runewords
