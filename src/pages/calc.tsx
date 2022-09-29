@@ -1,10 +1,14 @@
+import { GetServerSidePropsContext } from 'next'
+import slugify from 'slugify'
+import { ParsedUrlQuery } from 'querystring'
+import { useEffect, useState } from 'react'
+import type { NextPage } from 'next'
 import RuneInventoryDisplay from '@/components/calc/RuneInventoryDisplay'
 import CalculatorResultsDisplay from '@/components/calc/CalculatorResultsDisplay'
 import Button from '@/components/common/Button'
+import useSearchQuery from '@/hooks/useSearchQuery'
 import { calculateRunesNeeded } from '@/utils/calculator'
-import { createInventory, getHighestRune, getLowestRune, getPreviousRune, lookupRunes } from '@/utils/runes'
-import { useEffect, useState } from 'react'
-import type { NextPage } from 'next'
+import { createInventory, getLowestRune, getPreviousRune, lookupRunes } from '@/utils/runes'
 import { Rune, RuneCalculation, RuneInventory, Runeword } from '@/types'
 import RuneRangeSelector from '@/components/calc/RuneRangeSelector'
 import RunewordDisplay from '@/components/calc/RunewordDisplay'
@@ -16,16 +20,39 @@ import AllRunes from '@/data/runes'
 const ALL_RUNE_NAMES = AllRunes.map((r) => r.name)
 const DEFAULT_MIN_RUNE = AllRunes.find((r) => r.key === 'el')!
 
-const Calc: NextPage = () => {
+type CalcContext = {
+  query: ParsedUrlQuery
+}
+
+const Calc: NextPage<CalcContext> = (context) => {
+  const { setQuery } = useSearchQuery()
   const [selectedRuneword, setSelectedRuneword] = useState<Runeword | undefined>()
   const [zeroQuantityVisibility, setZeroQuantityVisibility] = useState<boolean>(true)
   const [runeInventory, setRuneInventory] = useState<RuneInventory>(createInventory(ALL_RUNE_NAMES))
   const [minRune, setMinRune] = useState<Rune>(DEFAULT_MIN_RUNE)
   const [calculatorResults, setCalculatorResults] = useState<RuneCalculation[]>([])
 
+  useEffect(() => {
+    const { selected } = context.query
+    if (typeof selected === 'string' && selected.trim()) {
+      const runeword = AllRunewords.find((r) => slugify(r.name).toLowerCase() === selected)
+      if (runeword) {
+        console.log(`setting selected runeword to '${runeword.name}' (${selected})`)
+        setSelectedRuneword(runeword)
+      }
+    }
+    if (typeof context.query.minRune === 'string') {
+      const rune = AllRunes.find((r) => slugify(r.name).toLowerCase() === context.query.minRune)
+      if (rune) {
+        console.log(`setting min rune to '${rune.name}' (${context.query.minRune})`)
+        setMinRune(rune)
+      }
+    }
+  }, [])
+
   // Automatically set min/max rune range when selecting a runeword
   useEffect(() => {
-    if (!selectedRuneword) {
+    if (!selectedRuneword || context.query.minRune) {
       return
     }
 
@@ -50,6 +77,13 @@ const Calc: NextPage = () => {
 
     setCalculatorResults(newRunesNeeded)
   }, [selectedRuneword, runeInventory, minRune])
+
+  useEffect(() => {
+    setQuery({
+      selected: selectedRuneword ? slugify(selectedRuneword.name).toLowerCase() : null,
+      minRune: slugify(minRune.name).toLowerCase(),
+    })
+  }, [selectedRuneword, minRune])
 
   const onRuneInventoryChanged = (key: string, newAmount: number) => {
     const newInventory = { ...runeInventory, [key]: newAmount }
@@ -115,6 +149,15 @@ const Calc: NextPage = () => {
       </div>
     </MasterDetailLayout>
   )
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const query = context.query
+  return {
+    props: {
+      query,
+    },
+  }
 }
 
 export default Calc

@@ -1,27 +1,22 @@
-import { ReactNode, useRef } from 'react'
+import { ReactNode } from 'react'
 
 type ToggleButtonProps = {
   children: ReactNode
   className?: string
   activeClassName?: string
-  onChange: (isChecked: boolean) => void
+  isChecked: boolean
+  onChange?: (isChecked: boolean) => void
 }
 
 const ToggleButton = (props: ToggleButtonProps) => {
-  const checkboxRef = useRef<HTMLInputElement>(null)
-
-  const style = checkboxRef.current && checkboxRef.current.checked ? props.activeClassName : props.className
+  const style = props.isChecked ? props.activeClassName : props.className
 
   return (
     <div>
-      <input ref={checkboxRef} type={'checkbox'} className={'appearance-none hidden'} />
       <button
         className={style}
         onClick={() => {
-          if (checkboxRef.current) {
-            checkboxRef.current.checked = !checkboxRef.current.checked
-            props.onChange(checkboxRef.current.checked)
-          }
+          props.onChange && props.onChange(!props.isChecked)
         }}
       >
         {props.children}

@@ -3,7 +3,8 @@ import { ReactNode } from 'react'
 
 type SelectableChoiceProps = {
   children: ReactNode
-  onChange: (isChecked: boolean) => void
+  isChecked: boolean
+  onChange?: (isChecked: boolean) => void
 }
 
 const COMMON_STYLE = 'inline-block px-2 py-1 m-1 border-2 rounded-2xl text-md min-w-[50px]'
@@ -16,6 +17,7 @@ const SelectableChoice = (props: SelectableChoiceProps) => {
       <ToggleButton
         className={`${COMMON_STYLE} ${NORMAL_STYLE}`}
         activeClassName={`${COMMON_STYLE} ${SELECTED_STYLE}`}
+        isChecked={props.isChecked}
         onChange={props.onChange}
       >
         {props.children}
