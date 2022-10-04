@@ -1,6 +1,6 @@
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
-
+import { trpc } from '@/utils/trpc'
 import NavBar from '@/components/navigation/NavBar'
 
 import 'tailwindcss/tailwind.css'
@@ -22,4 +22,4 @@ function App({ Component, pageProps }: AppProps) {
   )
 }
 
-export default App
+export default trpc.withTRPC(App)

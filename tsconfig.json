@@ -9,6 +9,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -22,6 +23,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@api/*": [
+        "src/pages/api/*"
       ]
     }
   },
