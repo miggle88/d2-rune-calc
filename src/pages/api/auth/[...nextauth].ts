@@ -14,6 +14,10 @@ export default NextAuth({
   secret: process.env.JWT_SECRET!,
   callbacks: {
     async signIn({ user }) {
+      if (!user.email) {
+        return false
+      }
+
       // Check if user exists in the database
       const dbUser = await prisma.user.findFirst({
         where: { emailAddress: user.email },
@@ -23,7 +27,8 @@ export default NextAuth({
       if (!dbUser) {
         await prisma.user.create({
           data: {
-            name: user.name,
+            // @ts-ignore
+            name: user.name ?? user.email,
             emailAddress: user.email,
           },
         })

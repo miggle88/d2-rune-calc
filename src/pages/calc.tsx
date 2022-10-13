@@ -40,14 +40,12 @@ const Calc: NextPage<CalcContext> = (context) => {
     if (typeof selected === 'string' && selected.trim()) {
       const runeword = AllRunewords.find((r) => slugify(r.name).toLowerCase() === selected)
       if (runeword) {
-        console.log(`setting selected runeword to '${runeword.name}' (${selected})`)
         setSelectedRuneword(runeword)
       }
     }
     if (typeof context.query.minRune === 'string') {
       const rune = AllRunes.find((r) => slugify(r.name).toLowerCase() === context.query.minRune)
       if (rune) {
-        console.log(`setting min rune to '${rune.name}' (${context.query.minRune})`)
         setMinRune(rune)
       }
     }
@@ -87,10 +85,6 @@ const Calc: NextPage<CalcContext> = (context) => {
       minRune: slugify(minRune.name).toLowerCase(),
     })
   }, [selectedRuneword, minRune])
-
-  useEffect(() => {
-    console.log(`Logged in user: ${JSON.stringify(session?.user)}`)
-  }, [session])
 
   const onRuneInventoryChanged = (key: string, newAmount: number) => {
     const newInventory = { ...runeInventory, [key]: newAmount }
