@@ -6,6 +6,7 @@ export default NextAuth({
     GithubProvider({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
+      // @ts-ignore
       scope: 'read:user',
     }),
   ],
