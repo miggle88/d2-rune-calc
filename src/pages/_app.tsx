@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
+import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { trpc } from '@/utils/trpc'
 import NavBar from '@/components/navigation/NavBar'
@@ -7,7 +8,11 @@ import NavBar from '@/components/navigation/NavBar'
 import 'tailwindcss/tailwind.css'
 import '@/styles/globals.css'
 
-function App({ Component, pageProps, session }: AppProps) {
+type CustomAppProps = {
+  session: Session
+}
+
+function App({ Component, pageProps }: AppProps<CustomAppProps>) {
   return (
     <div>
       <Head>
@@ -17,7 +22,7 @@ function App({ Component, pageProps, session }: AppProps) {
         <meta name={'author'} content={'Mike Rogers'} />
         <meta name={'viewport'} content={'initial-scale=1.0, width=device-width'} />
       </Head>
-      <SessionProvider session={session}>
+      <SessionProvider session={pageProps.session}>
         <NavBar />
         <Component {...pageProps} />
       </SessionProvider>
