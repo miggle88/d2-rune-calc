@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 import GithubProvider from 'next-auth/providers/github'
+import { prisma } from '@/db'
 
 export default NextAuth({
   providers: [
@@ -11,4 +12,23 @@ export default NextAuth({
     }),
   ],
   secret: process.env.JWT_SECRET!,
+  callbacks: {
+    async signIn({ user }) {
+      // Check if user exists in the database
+      const dbUser = await prisma.user.findFirst({
+        where: { emailAddress: user.email },
+      })
+
+      // Create user in database if they do not exist already
+      if (!dbUser) {
+        await prisma.user.create({
+          data: {
+            name: user.name,
+            emailAddress: user.email,
+          },
+        })
+      }
+      return true
+    },
+  },
 })

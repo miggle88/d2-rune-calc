@@ -2,6 +2,7 @@ import { GetServerSidePropsContext } from 'next'
 import slugify from 'slugify'
 import { ParsedUrlQuery } from 'querystring'
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 import type { NextPage } from 'next'
 import RuneInventoryDisplay from '@/components/calc/RuneInventoryDisplay'
 import CalculatorResultsDisplay from '@/components/calc/CalculatorResultsDisplay'
@@ -16,6 +17,7 @@ import MasterDetailLayout from '@/components/layout/MasterDetailLayout'
 import RunewordList from '@/components/runewords/RunewordList'
 import AllRunewords from '@/data/runewords'
 import AllRunes from '@/data/runes'
+import Conditional from '@/components/layout/Conditional'
 
 const ALL_RUNE_NAMES = AllRunes.map((r) => r.name)
 const DEFAULT_MIN_RUNE = AllRunes.find((r) => r.key === 'el')!
@@ -25,6 +27,7 @@ type CalcContext = {
 }
 
 const Calc: NextPage<CalcContext> = (context) => {
+  const { data: session, status } = useSession()
   const { setQuery } = useSearchQuery()
   const [selectedRuneword, setSelectedRuneword] = useState<Runeword | undefined>()
   const [zeroQuantityVisibility, setZeroQuantityVisibility] = useState<boolean>(true)
@@ -85,6 +88,10 @@ const Calc: NextPage<CalcContext> = (context) => {
     })
   }, [selectedRuneword, minRune])
 
+  useEffect(() => {
+    console.log(`Logged in user: ${JSON.stringify(session?.user)}`)
+  }, [session])
+
   const onRuneInventoryChanged = (key: string, newAmount: number) => {
     const newInventory = { ...runeInventory, [key]: newAmount }
     setRuneInventory(newInventory)
@@ -97,6 +104,9 @@ const Calc: NextPage<CalcContext> = (context) => {
       </div>
       <div>
         <div className={'flex flex-col text-center'}>
+          <Conditional condition={status !== 'authenticated'}>
+            <div className={'text-red-500 py-2'}>You are not logged in, your inventory will not be stored</div>
+          </Conditional>
           <div className={'p-3 text-2xl'}>Runes Collected</div>
           <div className={'flex flex-row justify-center'}>
             <input
