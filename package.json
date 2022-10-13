@@ -11,6 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "pretty": "prettier --write ./src",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "prisma:pull": "prisma db pull",
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio"
