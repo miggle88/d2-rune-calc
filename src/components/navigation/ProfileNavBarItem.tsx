@@ -6,24 +6,25 @@ type ProfileNavBarItemProps = {}
 
 const ProfileNavBarItem = (props: ProfileNavBarItemProps) => {
   const { data: session, status } = useSession()
+  const user = session?.user
 
-  if (status !== 'authenticated') {
+  if (!session || !user || status !== 'authenticated') {
     return (
-      <Button className={'p-3'} onClick={() => signIn()}>
+      <Button className={'text-red-500 text-md p-3 h-[48px] place-self-center'} onClick={() => signIn()}>
         Login/Register
       </Button>
     )
   }
 
-  const { user } = session
-
   return (
     <div className={'flex flex-row'}>
       <div className={'text-xl place-self-center px-2'}>{user.name}</div>
       <div className={'px-4 pt-3 pb-2'}>
-        <Image className={'rounded-full'} src={user.image} alt={user.name} height={40} width={40} />
+        <Image className={'rounded-full'} src={user.image!} alt={user.name!} height={40} width={40} />
       </div>
-      <Button onClick={() => signOut()}>Log out</Button>
+      <Button className={'text-red-500 text-md p-3 h-[48px] place-self-center'} onClick={() => signOut()}>
+        Log out
+      </Button>
     </div>
   )
 }
