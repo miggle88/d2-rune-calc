@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth'
+import NextAuth, { User } from 'next-auth'
 import GithubProvider from 'next-auth/providers/github'
 import { prisma } from '@/db'
 
@@ -27,8 +27,7 @@ export default NextAuth({
       if (!dbUser) {
         await prisma.user.create({
           data: {
-            // @ts-ignore
-            name: user.name ?? user.email,
+            name: (user as User)?.name ?? 'Unknown User',
             emailAddress: user.email,
           },
         })
