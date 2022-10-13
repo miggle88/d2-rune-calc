@@ -91,6 +91,10 @@ const Calc: NextPage<CalcContext> = (context) => {
     setRuneInventory(newInventory)
   }
 
+  useEffect(() => {
+    console.log(`session = ${JSON.stringify(session, null, 2)}`)
+  }, [session])
+
   return (
     <MasterDetailLayout>
       <div>
