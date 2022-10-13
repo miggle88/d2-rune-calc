@@ -23,6 +23,7 @@
     "@trpc/react": "^10.0.0-proxy-beta.13",
     "@trpc/server": "^10.0.0-proxy-beta.13",
     "next": "12.2.5",
+    "next-auth": "^4.13.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "slugify": "^1.6.5",

@@ -1,12 +1,13 @@
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
+import { SessionProvider } from 'next-auth/react'
 import { trpc } from '@/utils/trpc'
 import NavBar from '@/components/navigation/NavBar'
 
 import 'tailwindcss/tailwind.css'
 import '@/styles/globals.css'
 
-function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps, session }: AppProps) {
   return (
     <div>
       <Head>
@@ -16,8 +17,10 @@ function App({ Component, pageProps }: AppProps) {
         <meta name={'author'} content={'Mike Rogers'} />
         <meta name={'viewport'} content={'initial-scale=1.0, width=device-width'} />
       </Head>
-      <NavBar />
-      <Component {...pageProps} />
+      <SessionProvider session={session}>
+        <NavBar />
+        <Component {...pageProps} />
+      </SessionProvider>
     </div>
   )
 }

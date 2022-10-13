@@ -16,7 +16,6 @@ const Button = (props: ButtonProps) => {
   return (
     <button className={`${BUTTON_STYLE} ${props.className ?? ''}`} onClick={props.onClick}>
       {props.children}
-      {props.children}
     </button>
   )
 }

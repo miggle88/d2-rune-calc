@@ -1,4 +1,5 @@
 import NavBarItem from '@/components/navigation/NavBarItem'
+import ProfileNavBarItem from '@/components/navigation/ProfileNavBarItem'
 
 const NavBar = () => {
   return (
@@ -8,6 +9,7 @@ const NavBar = () => {
       <NavBarItem href={'/calc'}>Calc</NavBarItem>
       <NavBarItem href={'/profiles'}>Profiles</NavBarItem>
       <NavBarItem href={'/feedback'}>Feedback</NavBarItem>
+      <ProfileNavBarItem />
     </div>
   )
 }
