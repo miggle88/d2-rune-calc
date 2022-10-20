@@ -2,6 +2,7 @@ import authenticate from '@/server/middlewares/authenticate'
 import logRequest from '@/server/middlewares/logRequest'
 import { t } from '@/server/trpc'
 import { RuneInventory } from '@/types'
+import { z } from 'zod'
 
 export const inventoryRouter = t.router({
   getInventory: t.procedure
@@ -22,5 +23,12 @@ export const inventoryRouter = t.router({
       }, {} as RuneInventory)
 
       return formattedInventory
+    }),
+  updateInventory: t.procedure
+    .use(logRequest)
+    .use(authenticate)
+    .input(z.object({}).catchall(z.number().min(0).max(999)))
+    .mutation(async ({ ctx, input }) => {
+      return { message: 'ok' }
     }),
 })

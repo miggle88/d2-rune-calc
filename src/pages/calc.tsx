@@ -22,6 +22,7 @@ import { calculateRunesNeeded } from '@/utils/calculator'
 
 const ALL_RUNE_NAMES = AllRunes.map((r) => slugify(r.name.toLowerCase()))
 const DEFAULT_MIN_RUNE = AllRunes.find((r) => r.key === 'el')!
+const UPDATE_TIMER_DELAY = 3000
 
 type CalcContext = {
   query: ParsedUrlQuery
@@ -32,19 +33,45 @@ const Calc: NextPage<CalcContext> = (context) => {
   const { setQuery } = useSearchQuery()
   const [selectedRuneword, setSelectedRuneword] = useState<Runeword | undefined>()
   const [zeroQuantityVisibility, setZeroQuantityVisibility] = useState<boolean>(true)
+  const [pendingUpdates, setPendingUpdates] = useState<RuneInventory>({})
+  const [updateTimerId, setUpdateTimerId] = useState<NodeJS.Timeout | null>(null)
   const [runeInventory, setRuneInventory] = useState<RuneInventory>(createInventory(ALL_RUNE_NAMES))
   const [minRune, setMinRune] = useState<Rune>(DEFAULT_MIN_RUNE)
   const [calculatorResults, setCalculatorResults] = useState<RuneCalculation[]>([])
 
-  const getRuneInventory = trpc.getInventory.useQuery(undefined, {
+  const fetchRuneInventory = trpc.getInventory.useQuery(undefined, {
     onSuccess: (data) => {
       const newInventory = {
         ...createInventory(ALL_RUNE_NAMES),
         ...data,
       }
       setRuneInventory(newInventory)
+      setPendingUpdates({})
     },
   })
+
+  const saveRuneInventory = trpc.updateInventory.useMutation({
+    onSuccess: (data) => {
+      setPendingUpdates({})
+    },
+  })
+
+  useEffect(() => {
+    // Clear the existing timer, if queued
+    if (updateTimerId) {
+      clearTimeout(updateTimerId)
+      setUpdateTimerId(null)
+    }
+
+    // If there are pending updates
+    if (Object.keys(pendingUpdates).length > 0) {
+      const timerId = setTimeout(() => {
+        saveRuneInventory.mutate(pendingUpdates)
+      }, UPDATE_TIMER_DELAY)
+
+      setUpdateTimerId(timerId)
+    }
+  }, [pendingUpdates])
 
   useEffect(() => {
     const { selected } = context.query
@@ -100,6 +127,12 @@ const Calc: NextPage<CalcContext> = (context) => {
   const onRuneInventoryChanged = (key: string, newAmount: number) => {
     const newInventory = { ...runeInventory, [key]: newAmount }
     setRuneInventory(newInventory)
+
+    const newPendingUpdates = {
+      ...pendingUpdates,
+      [key]: newAmount,
+    }
+    setPendingUpdates(newPendingUpdates)
   }
 
   return (
