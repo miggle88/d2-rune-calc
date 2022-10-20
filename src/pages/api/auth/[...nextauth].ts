@@ -32,8 +32,6 @@ export default NextAuth({
           },
         })
       }
-
-      console.log('SIGN IN>')
       return true
     },
     async jwt({ token }) {
@@ -43,7 +41,7 @@ export default NextAuth({
 
       // Find the user in the database
       const dbUser = await prisma.user.findFirst({
-        where: { emailAddress: token.email },
+        where: { emailAddress: token.email! },
       })
 
       // If user exists, attach the user id to the token
@@ -55,6 +53,7 @@ export default NextAuth({
     },
     async session({ session, token }) {
       // Include user id from the token into the session
+      // @ts-ignore
       session.userId = token.userId
       return session
     },

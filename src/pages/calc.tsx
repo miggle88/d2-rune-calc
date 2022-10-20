@@ -1,23 +1,24 @@
+import { trpc } from '@/utils/trpc'
 import { GetServerSidePropsContext } from 'next'
 import slugify from 'slugify'
 import { ParsedUrlQuery } from 'querystring'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import type { NextPage } from 'next'
+import { Rune, RuneCalculation, RuneInventory, Runeword } from '@/types'
 import RuneInventoryDisplay from '@/components/calc/RuneInventoryDisplay'
 import CalculatorResultsDisplay from '@/components/calc/CalculatorResultsDisplay'
 import Button from '@/components/common/Button'
-import useSearchQuery from '@/hooks/useSearchQuery'
-import { calculateRunesNeeded } from '@/utils/calculator'
-import { createInventory, getLowestRune, getPreviousRune, lookupRunes } from '@/utils/runes'
-import { Rune, RuneCalculation, RuneInventory, Runeword } from '@/types'
 import RuneRangeSelector from '@/components/calc/RuneRangeSelector'
 import RunewordDisplay from '@/components/calc/RunewordDisplay'
 import MasterDetailLayout from '@/components/layout/MasterDetailLayout'
 import RunewordList from '@/components/runewords/RunewordList'
+import Conditional from '@/components/layout/Conditional'
+import useSearchQuery from '@/hooks/useSearchQuery'
 import AllRunewords from '@/data/runewords'
 import AllRunes from '@/data/runes'
-import Conditional from '@/components/layout/Conditional'
+import { createInventory, getLowestRune, getPreviousRune, lookupRunes } from '@/utils/runes'
+import { calculateRunesNeeded } from '@/utils/calculator'
 
 const ALL_RUNE_NAMES = AllRunes.map((r) => r.name)
 const DEFAULT_MIN_RUNE = AllRunes.find((r) => r.key === 'el')!
@@ -28,6 +29,8 @@ type CalcContext = {
 
 const Calc: NextPage<CalcContext> = (context) => {
   const { data: session, status } = useSession()
+  const getUserProfile = trpc.getUserProfile.useQuery()
+
   const { setQuery } = useSearchQuery()
   const [selectedRuneword, setSelectedRuneword] = useState<Runeword | undefined>()
   const [zeroQuantityVisibility, setZeroQuantityVisibility] = useState<boolean>(true)
@@ -91,10 +94,6 @@ const Calc: NextPage<CalcContext> = (context) => {
     setRuneInventory(newInventory)
   }
 
-  useEffect(() => {
-    console.log(`session = ${JSON.stringify(session, null, 2)}`)
-  }, [session])
-
   return (
     <MasterDetailLayout>
       <div>
@@ -104,6 +103,9 @@ const Calc: NextPage<CalcContext> = (context) => {
         <div className={'flex flex-col text-center'}>
           <Conditional condition={status !== 'authenticated'}>
             <div className={'text-red-500 py-2'}>You are not logged in, your inventory will not be stored</div>
+          </Conditional>
+          <Conditional condition={status === 'authenticated'}>
+            <pre className={'text-white py-2'}>{JSON.stringify(getUserProfile.data, null, 2)}</pre>
           </Conditional>
           <div className={'p-3 text-2xl'}>Runes Collected</div>
           <div className={'flex flex-row justify-center'}>
