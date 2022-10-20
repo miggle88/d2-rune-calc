@@ -1,39 +1,77 @@
+import { trpc } from '@/utils/trpc'
 import { GetServerSidePropsContext } from 'next'
 import slugify from 'slugify'
 import { ParsedUrlQuery } from 'querystring'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import type { NextPage } from 'next'
+import { Rune, RuneCalculation, RuneInventory, Runeword } from '@/types'
 import RuneInventoryDisplay from '@/components/calc/RuneInventoryDisplay'
 import CalculatorResultsDisplay from '@/components/calc/CalculatorResultsDisplay'
 import Button from '@/components/common/Button'
-import useSearchQuery from '@/hooks/useSearchQuery'
-import { calculateRunesNeeded } from '@/utils/calculator'
-import { createInventory, getLowestRune, getPreviousRune, lookupRunes } from '@/utils/runes'
-import { Rune, RuneCalculation, RuneInventory, Runeword } from '@/types'
 import RuneRangeSelector from '@/components/calc/RuneRangeSelector'
 import RunewordDisplay from '@/components/calc/RunewordDisplay'
 import MasterDetailLayout from '@/components/layout/MasterDetailLayout'
 import RunewordList from '@/components/runewords/RunewordList'
+import Conditional from '@/components/layout/Conditional'
+import useSearchQuery from '@/hooks/useSearchQuery'
 import AllRunewords from '@/data/runewords'
 import AllRunes from '@/data/runes'
-import Conditional from '@/components/layout/Conditional'
+import { createInventory, getLowestRune, getPreviousRune, lookupRunes } from '@/utils/runes'
+import { calculateRunesNeeded } from '@/utils/calculator'
 
-const ALL_RUNE_NAMES = AllRunes.map((r) => r.name)
+const ALL_RUNE_NAMES = AllRunes.map((r) => slugify(r.name.toLowerCase()))
 const DEFAULT_MIN_RUNE = AllRunes.find((r) => r.key === 'el')!
+const UPDATE_TIMER_DELAY = 3000
 
 type CalcContext = {
   query: ParsedUrlQuery
 }
 
 const Calc: NextPage<CalcContext> = (context) => {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const { setQuery } = useSearchQuery()
   const [selectedRuneword, setSelectedRuneword] = useState<Runeword | undefined>()
   const [zeroQuantityVisibility, setZeroQuantityVisibility] = useState<boolean>(true)
+  const [pendingUpdates, setPendingUpdates] = useState<RuneInventory>({})
+  const [updateTimerId, setUpdateTimerId] = useState<NodeJS.Timeout | null>(null)
   const [runeInventory, setRuneInventory] = useState<RuneInventory>(createInventory(ALL_RUNE_NAMES))
   const [minRune, setMinRune] = useState<Rune>(DEFAULT_MIN_RUNE)
   const [calculatorResults, setCalculatorResults] = useState<RuneCalculation[]>([])
+
+  const fetchRuneInventory = trpc.getInventory.useQuery(undefined, {
+    onSuccess: (data) => {
+      const newInventory = {
+        ...createInventory(ALL_RUNE_NAMES),
+        ...data,
+      }
+      setRuneInventory(newInventory)
+      setPendingUpdates({})
+    },
+  })
+
+  const saveRuneInventory = trpc.updateInventory.useMutation({
+    onSuccess: (data) => {
+      setPendingUpdates({})
+    },
+  })
+
+  useEffect(() => {
+    // Clear the existing timer, if queued
+    if (updateTimerId) {
+      clearTimeout(updateTimerId)
+      setUpdateTimerId(null)
+    }
+
+    // If there are pending updates
+    if (Object.keys(pendingUpdates).length > 0) {
+      const timerId = setTimeout(() => {
+        saveRuneInventory.mutate(pendingUpdates)
+      }, UPDATE_TIMER_DELAY)
+
+      setUpdateTimerId(timerId)
+    }
+  }, [pendingUpdates])
 
   useEffect(() => {
     const { selected } = context.query
@@ -89,6 +127,12 @@ const Calc: NextPage<CalcContext> = (context) => {
   const onRuneInventoryChanged = (key: string, newAmount: number) => {
     const newInventory = { ...runeInventory, [key]: newAmount }
     setRuneInventory(newInventory)
+
+    const newPendingUpdates = {
+      ...pendingUpdates,
+      [key]: newAmount,
+    }
+    setPendingUpdates(newPendingUpdates)
   }
 
   return (

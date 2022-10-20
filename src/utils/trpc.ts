@@ -28,6 +28,13 @@ export const trpc = createTRPCNext<AppRouter>({
            * @link https://trpc.io/docs/ssr
            **/
           url: `${getBaseUrl()}/api/trpc`,
+          headers() {
+            if (ctx?.req) {
+              const { connection: _connection, ...headers } = ctx.req.headers
+              return { ...headers, 'x-ssr': '1' }
+            }
+            return {}
+          },
         }),
       ],
       /**

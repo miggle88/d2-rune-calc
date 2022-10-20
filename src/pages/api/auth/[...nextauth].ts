@@ -34,5 +34,28 @@ export default NextAuth({
       }
       return true
     },
+    async jwt({ token }) {
+      if (token.userId) {
+        return token
+      }
+
+      // Find the user in the database
+      const dbUser = await prisma.user.findFirst({
+        where: { emailAddress: token.email! },
+      })
+
+      // If user exists, attach the user id to the token
+      if (dbUser) {
+        token.userId = dbUser.id
+      }
+
+      return token
+    },
+    async session({ session, token }) {
+      // Include user id from the token into the session
+      // @ts-ignore
+      session.userId = token.userId
+      return session
+    },
   },
 })

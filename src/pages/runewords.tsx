@@ -2,6 +2,7 @@ import { ParsedUrlQuery } from 'querystring'
 import { useEffect, useState } from 'react'
 import slugify from 'slugify'
 import type { GetServerSidePropsContext, NextPage } from 'next'
+import { ItemSubType, ItemType, Runeword } from '@/types'
 import SearchBar from '@/components/common/SearchBar'
 import MultiSelectGroup from '@/components/common/MultiSelectGroup'
 import MasterDetailLayout from '@/components/layout/MasterDetailLayout'
@@ -9,7 +10,6 @@ import RunewordList from '@/components/runewords/RunewordList'
 import RunewordDetail from '@/components/runewords/RunewordDetail'
 import useSearchQuery from '@/hooks/useSearchQuery'
 import AllRunewords from '@/data/runewords'
-import { ItemSubType, ItemType, Runeword } from '@/types'
 import { hasCommonElement } from '@/utils/arrays'
 import { runewordSorter } from '@/utils/sorting'
 
@@ -35,24 +35,19 @@ const Runewords: NextPage<RunewordsContext> = (context) => {
     if (typeof selected === 'string' && selected.trim()) {
       const runeword = AllRunewords.find((r) => slugify(r.name).toLowerCase() === selected)
       if (runeword) {
-        console.log(`setting selected runeword to '${runeword.name}' (${selected})`)
         setSelectedRuneword(runeword)
       }
     }
     if (typeof term === 'string' && term.trim()) {
-      console.log(`setting search term to '${term}'`)
       setSearchTerm(term)
     }
     if (typeof types === 'string' && types.trim()) {
-      console.log(`setting type filters to '${types}'`)
       setItemTypeFilters(types.split(','))
     }
     if (typeof subTypes === 'string' && subTypes.trim()) {
-      console.log(`setting subType filters to '${subTypes}'`)
       setSubTypeFilters(subTypes.split(','))
     }
     if (typeof sockets === 'string' && sockets.trim()) {
-      console.log(`setting socket filters to '${sockets}'`)
       setSocketFilters(sockets.split(','))
     }
   }, [])
