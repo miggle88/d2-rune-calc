@@ -7,7 +7,7 @@ const authenticate = t.middleware(async ({ path, type, next }) => {
 
   // response is going out
   const elapsedTime = new Date().valueOf() - startTime.valueOf()
-  console.log(`${path} (${type}) took ${elapsedTime} ms`)
+  console.log(`${type.toUpperCase()}: ${path} - ${elapsedTime} ms`)
 
   return result
 })

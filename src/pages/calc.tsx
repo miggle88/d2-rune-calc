@@ -20,7 +20,7 @@ import AllRunes from '@/data/runes'
 import { createInventory, getLowestRune, getPreviousRune, lookupRunes } from '@/utils/runes'
 import { calculateRunesNeeded } from '@/utils/calculator'
 
-const ALL_RUNE_NAMES = AllRunes.map((r) => r.name)
+const ALL_RUNE_NAMES = AllRunes.map((r) => slugify(r.name.toLowerCase()))
 const DEFAULT_MIN_RUNE = AllRunes.find((r) => r.key === 'el')!
 
 type CalcContext = {
@@ -28,15 +28,23 @@ type CalcContext = {
 }
 
 const Calc: NextPage<CalcContext> = (context) => {
-  const { data: session, status } = useSession()
-  const getUserProfile = trpc.getUserProfile.useQuery()
-
+  const { status } = useSession()
   const { setQuery } = useSearchQuery()
   const [selectedRuneword, setSelectedRuneword] = useState<Runeword | undefined>()
   const [zeroQuantityVisibility, setZeroQuantityVisibility] = useState<boolean>(true)
   const [runeInventory, setRuneInventory] = useState<RuneInventory>(createInventory(ALL_RUNE_NAMES))
   const [minRune, setMinRune] = useState<Rune>(DEFAULT_MIN_RUNE)
   const [calculatorResults, setCalculatorResults] = useState<RuneCalculation[]>([])
+
+  const getRuneInventory = trpc.getInventory.useQuery(undefined, {
+    onSuccess: (data) => {
+      const newInventory = {
+        ...createInventory(ALL_RUNE_NAMES),
+        ...data,
+      }
+      setRuneInventory(newInventory)
+    },
+  })
 
   useEffect(() => {
     const { selected } = context.query
@@ -103,9 +111,6 @@ const Calc: NextPage<CalcContext> = (context) => {
         <div className={'flex flex-col text-center'}>
           <Conditional condition={status !== 'authenticated'}>
             <div className={'text-red-500 py-2'}>You are not logged in, your inventory will not be stored</div>
-          </Conditional>
-          <Conditional condition={status === 'authenticated'}>
-            <pre className={'text-white py-2'}>{JSON.stringify(getUserProfile.data, null, 2)}</pre>
           </Conditional>
           <div className={'p-3 text-2xl'}>Runes Collected</div>
           <div className={'flex flex-row justify-center'}>

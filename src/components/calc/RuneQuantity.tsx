@@ -35,7 +35,7 @@ const RuneQuantity = (props: RuneQuantityProps) => {
 
   return (
     <div className={'flex flex-col'}>
-      <div className={`text-center ${TEXT_STYLE}`}>{props.name}</div>
+      <div className={`text-center ${TEXT_STYLE}`}>{props.name.toUpperCase()}</div>
       <div
         className={'flex flex-row group justify-between border-gray-500 border-2 rounded focus-within:border-red-600'}
       >
