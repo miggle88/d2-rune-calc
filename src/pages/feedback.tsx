@@ -1,6 +1,7 @@
 import Button from '@/components/common/Button'
 import DropDown from '@/components/common/DropDown'
 import TextPrompt from '@/components/common/TextPrompt'
+import { trpc } from '@/utils/trpc'
 import type { NextPage } from 'next'
 import { useState } from 'react'
 
@@ -9,6 +10,9 @@ const Feedback: NextPage = () => {
   const [issueSummary, setIssueSummary] = useState('')
   const [issueProblem, setIssueProblem] = useState('')
   const [issueSolution, setIssueSolution] = useState('')
+
+  const submitFeedback = trpc.submitFeedback.useMutation()
+
   return (
     <div className={'p-3 flex flex-col place-items-center w-screen'}>
       <div className={'text-2xl'}>Please provide feedback on anything you like or dislike about the calculator.</div>
@@ -47,13 +51,18 @@ const Feedback: NextPage = () => {
       <Button
         className={'m-2'}
         onClick={() => {
-          console.log(issueType)
-          console.log(issueSummary)
-          console.log(issueProblem)
-          console.log(issueSolution)
+          if (submitFeedback.isLoading) {
+            return
+          }
+          submitFeedback.mutate({
+            type: issueType,
+            summary: issueSummary,
+            problem: issueProblem,
+            solution: issueSolution,
+          })
         }}
       >
-        Submit
+        {submitFeedback.isLoading ? 'Loading...' : 'Submit Feedback'}
       </Button>
       <div></div>
     </div>

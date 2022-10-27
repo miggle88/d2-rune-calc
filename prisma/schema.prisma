@@ -16,8 +16,10 @@ model User {
   id            Int             @id @default(autoincrement())
   name          String          @db.VarChar(255)
   emailAddress  String          @unique
+  isAdmin       Boolean         @default(false)
   createdAt     DateTime        @default(now())
   inventory     RuneInventory[]
+  feedback      Feedback[]
 }
 
 model RuneInventory {
@@ -26,4 +28,15 @@ model RuneInventory {
   rune          String   @db.VarChar(20)
   count         Int      @default(0)
   user          User     @relation(fields: [userId], references: [id])
+}
+
+model Feedback {
+  id            Int      @id @default(autoincrement())
+  userId        Int?
+  type          String   @db.VarChar(500)
+  summary       String   @db.VarChar(1000)
+  problem       String   @db.VarChar(1000)
+  solution      String   @db.VarChar(1000)
+  createdAt     DateTime @default(now())
+  user          User?    @relation(fields: [userId], references: [id])
 }
