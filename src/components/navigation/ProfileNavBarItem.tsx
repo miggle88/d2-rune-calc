@@ -1,11 +1,12 @@
-import { useSession, signIn, signOut } from 'next-auth/react'
+import useUserSession from '@/hooks/useUserSession'
+import { signIn, signOut } from 'next-auth/react'
 import Button from '@/components/common/Button'
 import Image from 'next/image'
 
 type ProfileNavBarItemProps = {}
 
 const ProfileNavBarItem = (props: ProfileNavBarItemProps) => {
-  const { data: session, status } = useSession()
+  const { data: session, status } = useUserSession()
   const user = session?.user
 
   if (!session || !user || status !== 'authenticated') {

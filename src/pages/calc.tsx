@@ -1,9 +1,9 @@
+import useUserSession from '@/hooks/useUserSession'
 import { trpc } from '@/utils/trpc'
 import { GetServerSidePropsContext } from 'next'
 import slugify from 'slugify'
 import { ParsedUrlQuery } from 'querystring'
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
 import type { NextPage } from 'next'
 import { Rune, RuneCalculation, RuneInventory, Runeword } from '@/types'
 import RuneInventoryDisplay from '@/components/calc/RuneInventoryDisplay'
@@ -29,7 +29,7 @@ type CalcContext = {
 }
 
 const Calc: NextPage<CalcContext> = (context) => {
-  const { status } = useSession()
+  const { status } = useUserSession()
   const { setQuery } = useSearchQuery()
   const [selectedRuneword, setSelectedRuneword] = useState<Runeword | undefined>()
   const [zeroQuantityVisibility, setZeroQuantityVisibility] = useState<boolean>(true)

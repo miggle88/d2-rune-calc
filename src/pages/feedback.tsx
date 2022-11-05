@@ -1,70 +1,59 @@
-import Button from '@/components/common/Button'
-import DropDown from '@/components/common/DropDown'
-import TextPrompt from '@/components/common/TextPrompt'
-import { trpc } from '@/utils/trpc'
+import FeedbackTable from '@/components/feedback/FeedbackTable'
+import Conditional from '@/components/layout/Conditional'
+import { useQueryClient } from '@tanstack/react-query'
 import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
+import useUserSession from '@/hooks/useUserSession'
+import { trpc } from '@/utils/trpc'
+import FeedbackForm from '@/components/feedback/FeedbackForm'
 
 const Feedback: NextPage = () => {
-  const [issueType, setIssueType] = useState('bug')
-  const [issueSummary, setIssueSummary] = useState('')
-  const [issueProblem, setIssueProblem] = useState('')
-  const [issueSolution, setIssueSolution] = useState('')
+  const router = useRouter()
+  const { data: session } = useUserSession()
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
 
+  const isAdmin = session?.isAdmin ?? false
+
+  const queryClient = useQueryClient()
+  const listFeedback = trpc.listFeedback.useQuery({ page, limit }, { enabled: isAdmin })
   const submitFeedback = trpc.submitFeedback.useMutation()
+  const deleteFeedback = trpc.deleteFeedbackById.useMutation()
 
-  return (
-    <div className={'p-3 flex flex-col place-items-center w-screen'}>
-      <div className={'text-2xl'}>Please provide feedback on anything you like or dislike about the calculator.</div>
-      <div className={'p-3'} />
-      <div className={'text-2xl px-2'}>Type of feedback</div>
-      <DropDown value={issueType} onChange={setIssueType} className={'min-w-[600px]'}>
-        <option value={'bug'}>Bug</option>
-        <option value={'feature'}>Feature Request</option>
-        <option value={'improvement'}>Improvement</option>
-        <option value={'other'}>Other</option>
-      </DropDown>
-      <TextPrompt
-        prompt={'Briefly describe the issue'}
-        value={issueSummary}
-        placeholder={'Insert text here'}
-        className={'min-w-[600px]'}
-        onChange={setIssueSummary}
-      />
-      <TextPrompt
-        prompt={'Describe what is not working or missing'}
-        value={issueProblem}
-        placeholder={'Insert text here'}
-        className={'min-w-[600px]'}
-        onChange={setIssueProblem}
-        isTextArea={true}
-      />
-      <TextPrompt
-        prompt={'Describe what function is expected'}
-        value={issueSolution}
-        placeholder={'Insert text here'}
-        className={'min-w-[600px]'}
-        onChange={setIssueSolution}
-        isTextArea={true}
-      />
-      <div className={'py-2'} />
-      <Button
-        className={'m-2'}
-        onClick={() => {
-          if (submitFeedback.isLoading) {
-            return
-          }
-          submitFeedback.mutate({
-            type: issueType,
-            summary: issueSummary,
-            problem: issueProblem,
-            solution: issueSolution,
+  // Use is not admin, show the feedback form
+  if (!isAdmin) {
+    return (
+      <FeedbackForm
+        isEnabled={!submitFeedback.isLoading}
+        onSubmit={(data) => {
+          submitFeedback.mutate(data, {
+            onSuccess: () => {
+              router.push('/feedback/thanks')
+            },
           })
         }}
-      >
-        {submitFeedback.isLoading ? 'Loading...' : 'Submit Feedback'}
-      </Button>
-      <div></div>
+      />
+    )
+  }
+
+  // User is an admin, show the feedback table
+  return (
+    <div>
+      <div className={'text-center text-2xl py-3'}>Feedback from Users</div>
+      <FeedbackTable
+        rows={listFeedback.data?.results ?? []}
+        onDelete={(id) => {
+          deleteFeedback.mutate(
+            { id },
+            {
+              onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: ['listFeedback'] })
+              },
+            }
+          )
+        }}
+      />
     </div>
   )
 }
