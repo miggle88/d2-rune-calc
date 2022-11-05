@@ -1,6 +1,8 @@
-import NextAuth, { User } from 'next-auth'
-import GithubProvider from 'next-auth/providers/github'
 import { prisma } from '@/db'
+import { UserSession } from '@/types'
+import NextAuth, { User } from 'next-auth'
+import { JWT } from 'next-auth/jwt'
+import GithubProvider from 'next-auth/providers/github'
 
 export default NextAuth({
   providers: [
@@ -34,7 +36,7 @@ export default NextAuth({
       }
       return true
     },
-    async jwt({ token }) {
+    async jwt({ token }): Promise<JWT> {
       if (token.userId) {
         return token
       }
@@ -47,15 +49,17 @@ export default NextAuth({
       // If user exists, attach the user id to the token
       if (dbUser) {
         token.userId = dbUser.id
+        token.isAdmin = dbUser.isAdmin
       }
 
       return token
     },
-    async session({ session, token }) {
-      // Include user id from the token into the session
-      // @ts-ignore
-      session.userId = token.userId
-      return session
+    async session({ session, token }): Promise<UserSession> {
+      return {
+        ...session,
+        userId: (token.userId as number) ?? 0,
+        isAdmin: (token.isAdmin as boolean) ?? false,
+      }
     },
   },
 })

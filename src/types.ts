@@ -1,3 +1,10 @@
+import { Session } from 'next-auth'
+
+export interface UserSession extends Session {
+  userId: number
+  isAdmin: boolean
+}
+
 export type Rune = {
   key: string
   name: string
