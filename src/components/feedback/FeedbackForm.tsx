@@ -1,6 +1,8 @@
 import Button from '@/components/common/Button'
 import DropDown from '@/components/common/DropDown'
 import TextPrompt from '@/components/common/TextPrompt'
+import ErrorTextDisplay from '@/components/errors/ErrorTextDisplay'
+import Conditional from '@/components/layout/Conditional'
 import { useState } from 'react'
 
 export type FeedbackSubmission = {
@@ -13,6 +15,7 @@ export type FeedbackSubmission = {
 type FeedbackFormProps = {
   isEnabled: boolean
   onSubmit: (data: FeedbackSubmission) => void
+  lastErrorMessage?: string
 }
 
 const FeedbackForm = (props: FeedbackFormProps) => {
@@ -20,6 +23,10 @@ const FeedbackForm = (props: FeedbackFormProps) => {
   const [issueSummary, setIssueSummary] = useState('')
   const [issueProblem, setIssueProblem] = useState('')
   const [issueSolution, setIssueSolution] = useState('')
+
+  const isSummaryInvalid = issueSummary.length < 1 || issueSummary.length > 500
+  const isProblemInvalid = issueProblem.length < 1 || issueProblem.length > 1000
+  const isSolutionInvalid = issueSolution.length < 1 || issueSolution.length > 1000
 
   return (
     <div className={'p-3 flex flex-col place-items-center w-screen'}>
@@ -39,6 +46,9 @@ const FeedbackForm = (props: FeedbackFormProps) => {
         className={'min-w-[600px]'}
         onChange={setIssueSummary}
       />
+      <Conditional condition={isSummaryInvalid}>
+        <div className={'text-gray-500 min-w-[600px]'}>Summary must between 1 and 500 characters</div>
+      </Conditional>
       <TextPrompt
         prompt={'Describe what is not working or missing'}
         value={issueProblem}
@@ -47,6 +57,9 @@ const FeedbackForm = (props: FeedbackFormProps) => {
         onChange={setIssueProblem}
         isTextArea={true}
       />
+      <Conditional condition={isProblemInvalid}>
+        <div className={'text-gray-500 min-w-[600px]'}>Problem must between 1 and 1000 characters</div>
+      </Conditional>
       <TextPrompt
         prompt={'Describe what function is expected'}
         value={issueSolution}
@@ -55,13 +68,14 @@ const FeedbackForm = (props: FeedbackFormProps) => {
         onChange={setIssueSolution}
         isTextArea={true}
       />
+      <Conditional condition={isSolutionInvalid}>
+        <div className={'text-gray-500 min-w-[600px]'}>Solution must between 1 and 1000 characters</div>
+      </Conditional>
       <div className={'py-2'} />
       <Button
         className={'m-2'}
+        disabled={!props.isEnabled || isSummaryInvalid || isProblemInvalid || isSolutionInvalid}
         onClick={() => {
-          if (!props.isEnabled) {
-            return
-          }
           props.onSubmit({
             type: issueType,
             summary: issueSummary,
@@ -73,6 +87,9 @@ const FeedbackForm = (props: FeedbackFormProps) => {
         Submit Feedback
       </Button>
       <div></div>
+      <Conditional condition={props.lastErrorMessage != null}>
+        <ErrorTextDisplay message={'An internal error has occurred. Please try again.'} />
+      </Conditional>
     </div>
   )
 }

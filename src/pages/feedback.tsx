@@ -1,5 +1,4 @@
 import FeedbackTable from '@/components/feedback/FeedbackTable'
-import Conditional from '@/components/layout/Conditional'
 import { useQueryClient } from '@tanstack/react-query'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -13,7 +12,6 @@ const Feedback: NextPage = () => {
   const { data: session } = useUserSession()
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
-
   const isAdmin = session?.isAdmin ?? false
 
   const queryClient = useQueryClient()
@@ -26,10 +24,14 @@ const Feedback: NextPage = () => {
     return (
       <FeedbackForm
         isEnabled={!submitFeedback.isLoading}
+        lastErrorMessage={submitFeedback.error?.message}
         onSubmit={(data) => {
           submitFeedback.mutate(data, {
             onSuccess: () => {
               router.push('/feedback/thanks')
+            },
+            onError: (err) => {
+              console.log(err)
             },
           })
         }}
