@@ -35,14 +35,6 @@ export function getLowestRune(runes: string[]): Rune | undefined {
   return sortedRunes.length ? sortedRunes[0] : undefined
 }
 
-export function createInventory(runes: string[], initialValue = 0): RuneInventory {
-  const runeInventory = {} as RuneInventory
-  for (const key of runes) {
-    runeInventory[key] = initialValue
-  }
-  return runeInventory
-}
-
 export function lookupRunes(runes: string[]): Rune[] {
   const results = [] as Rune[]
   for (const key of runes) {
