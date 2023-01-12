@@ -45,7 +45,7 @@ const Profiles: NextPage = () => {
       </div>
       <div>
         <div>
-          <div className={'text-center text-red-500 p-3 text-2xl'}>{selectedProfile?.name}'s Runes Collected</div>
+          <div className={'text-center text-red-500 p-3 text-2xl'}>{selectedProfile?.name}&apos;s Runes Collected</div>
           <RuneInventoryDisplay inventory={selectedProfile?.runeInventory ?? {}} showZeroQuantities={true} />
         </div>
       </div>

@@ -1,4 +1,5 @@
 import useUserSession from '@/hooks/useUserSession'
+import profiles from '@/pages/profiles'
 import { trpc } from '@/utils/trpc'
 import { GetServerSidePropsContext } from 'next'
 import slugify from 'slugify'
@@ -39,13 +40,18 @@ const Calc: NextPage<CalcContext> = (context) => {
   const [minRune, setMinRune] = useState<Rune>(DEFAULT_MIN_RUNE)
   const [calculatorResults, setCalculatorResults] = useState<RuneCalculation[]>([])
 
-  const fetchRuneInventory = trpc.getInventory.useQuery(undefined, {
-    onSuccess: (data) => {
-      const newInventory = { ...data }
-      setRuneInventory(newInventory)
-      setPendingUpdates({})
+  const fetchRuneInventory = trpc.getInventory.useQuery(
+    {
+      profileId: 0,
     },
-  })
+    {
+      onSuccess: (data) => {
+        const newInventory = { ...data }
+        setRuneInventory(newInventory)
+        setPendingUpdates({})
+      },
+    }
+  )
 
   const saveRuneInventory = trpc.updateInventory.useMutation({
     onSuccess: (data) => {
@@ -63,7 +69,7 @@ const Calc: NextPage<CalcContext> = (context) => {
     // If there are pending updates
     if (Object.keys(pendingUpdates).length > 0) {
       const timerId = setTimeout(() => {
-        saveRuneInventory.mutate(pendingUpdates)
+        saveRuneInventory.mutate({ profileId: 0, inventory: pendingUpdates })
       }, UPDATE_TIMER_DELAY)
 
       setUpdateTimerId(timerId)
