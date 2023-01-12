@@ -17,7 +17,7 @@ import Conditional from '@/components/layout/Conditional'
 import useSearchQuery from '@/hooks/useSearchQuery'
 import AllRunewords from '@/data/runewords'
 import AllRunes from '@/data/runes'
-import { createInventory, getLowestRune, getPreviousRune, lookupRunes } from '@/utils/runes'
+import { getLowestRune, getPreviousRune, lookupRunes } from '@/utils/runes'
 import { calculateRunesNeeded } from '@/utils/calculator'
 
 const ALL_RUNE_NAMES = AllRunes.map((r) => slugify(r.name.toLowerCase()))
@@ -35,16 +35,13 @@ const Calc: NextPage<CalcContext> = (context) => {
   const [zeroQuantityVisibility, setZeroQuantityVisibility] = useState<boolean>(true)
   const [pendingUpdates, setPendingUpdates] = useState<RuneInventory>({})
   const [updateTimerId, setUpdateTimerId] = useState<NodeJS.Timeout | null>(null)
-  const [runeInventory, setRuneInventory] = useState<RuneInventory>(createInventory(ALL_RUNE_NAMES))
+  const [runeInventory, setRuneInventory] = useState<RuneInventory>({})
   const [minRune, setMinRune] = useState<Rune>(DEFAULT_MIN_RUNE)
   const [calculatorResults, setCalculatorResults] = useState<RuneCalculation[]>([])
 
   const fetchRuneInventory = trpc.getInventory.useQuery(undefined, {
     onSuccess: (data) => {
-      const newInventory = {
-        ...createInventory(ALL_RUNE_NAMES),
-        ...data,
-      }
+      const newInventory = { ...data }
       setRuneInventory(newInventory)
       setPendingUpdates({})
     },
@@ -160,15 +157,14 @@ const Calc: NextPage<CalcContext> = (context) => {
             <Button
               className={''}
               onClick={() => {
-                const blankInventory = createInventory(ALL_RUNE_NAMES)
-                setRuneInventory(blankInventory)
+                setRuneInventory({})
               }}
             >
               <span className={'text-red-400 text-xl p-2'}>Reset Rune Inventory</span>
             </Button>
           </div>
           <RuneInventoryDisplay
-            runes={runeInventory}
+            inventory={runeInventory}
             showZeroQuantities={zeroQuantityVisibility}
             onChange={onRuneInventoryChanged}
           />

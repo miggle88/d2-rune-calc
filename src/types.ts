@@ -55,3 +55,24 @@ export type RuneCalculation = {
   rune: Rune
   requires: RuneInventory
 }
+
+export enum CharacterClass {
+  Amazon = 'Amazon',
+  Assassin = 'Assassin',
+  Barbarian = 'Barbarian',
+  Druid = 'Druid',
+  Necromancer = 'Necromancer',
+  Paladin = 'Paladin',
+  Sorceress = 'Sorceress',
+}
+
+export type CharacterProfile = {
+  name: string
+  level: number
+  class: CharacterClass
+  ladder: boolean
+  hardcore: boolean
+  createdDate: Date
+  updatedDate: Date
+  runeInventory: RuneInventory
+}
