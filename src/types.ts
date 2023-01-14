@@ -67,12 +67,13 @@ export enum CharacterClass {
 }
 
 export type CharacterProfile = {
+  id: number
   name: string
-  level: number
   class: CharacterClass
   ladder: boolean
   hardcore: boolean
-  createdDate: Date
-  updatedDate: Date
+  isStarred: boolean
+  createdAt: Date
+  updatedAt: Date
   runeInventory: RuneInventory
 }

@@ -4,6 +4,8 @@ import CharacterProfileListItem from './CharacterProfileListItem'
 type CharacterProfileListProps = {
   profiles: CharacterProfile[]
   onClick?: (profile: CharacterProfile) => void
+  onFavorite?: (profile: CharacterProfile, favorite: boolean) => void
+  onDelete?: (profile: CharacterProfile) => void
 }
 
 const CharacterProfileList = (props: CharacterProfileListProps) => {
@@ -14,7 +16,15 @@ const CharacterProfileList = (props: CharacterProfileListProps) => {
   return (
     <div className={'bg-red-900 flex flex-col'}>
       {props.profiles.map((profile) => {
-        return <CharacterProfileListItem key={profile.name} profile={profile} onClick={props.onClick} />
+        return (
+          <CharacterProfileListItem
+            key={profile.name}
+            profile={profile}
+            onClick={props.onClick}
+            onFavorite={props.onFavorite}
+            onDelete={props.onDelete}
+          />
+        )
       })}
     </div>
   )

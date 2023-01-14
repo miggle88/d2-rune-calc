@@ -45,10 +45,8 @@ const FeedbackForm = (props: FeedbackFormProps) => {
         placeholder={'Insert text here'}
         className={'min-w-[600px]'}
         onChange={setIssueSummary}
+        errorMessage={isSummaryInvalid ? 'Must be between 1 and 500 characters' : undefined}
       />
-      <Conditional condition={isSummaryInvalid}>
-        <div className={'text-gray-500 min-w-[600px]'}>Summary must between 1 and 500 characters</div>
-      </Conditional>
       <TextPrompt
         prompt={'Describe what is not working or missing'}
         value={issueProblem}
@@ -56,10 +54,8 @@ const FeedbackForm = (props: FeedbackFormProps) => {
         className={'min-w-[600px]'}
         onChange={setIssueProblem}
         isTextArea={true}
+        errorMessage={isProblemInvalid ? 'Problem must be between 1 and 1000 characters' : undefined}
       />
-      <Conditional condition={isProblemInvalid}>
-        <div className={'text-gray-500 min-w-[600px]'}>Problem must between 1 and 1000 characters</div>
-      </Conditional>
       <TextPrompt
         prompt={'Describe what function is expected'}
         value={issueSolution}
@@ -67,10 +63,8 @@ const FeedbackForm = (props: FeedbackFormProps) => {
         className={'min-w-[600px]'}
         onChange={setIssueSolution}
         isTextArea={true}
+        errorMessage={isSolutionInvalid ? 'Solution must between 1 and 1000 characters' : undefined}
       />
-      <Conditional condition={isSolutionInvalid}>
-        <div className={'text-gray-500 min-w-[600px]'}>Solution must between 1 and 1000 characters</div>
-      </Conditional>
       <div className={'py-2'} />
       <Button
         className={'m-2'}
