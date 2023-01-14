@@ -60,7 +60,7 @@ export const profilesRouter = t.router({
     .use(authenticate)
     .input(z.object({ id: z.number(), isStarred: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
-      const profile = await ctx.prisma.characterProfile.updateMany({
+      const profile = await ctx.prisma.characterProfile.update({
         where: {
           id: input.id,
           userId: ctx.session.userId,
@@ -78,7 +78,7 @@ export const profilesRouter = t.router({
     .use(authenticate)
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.characterProfile.deleteMany({
+      await ctx.prisma.characterProfile.delete({
         where: {
           id: input.id,
           userId: ctx.session.userId,
