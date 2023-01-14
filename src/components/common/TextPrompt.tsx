@@ -6,6 +6,7 @@ type TextPromptProps = {
   placeholder?: string
   className?: string
   isTextArea?: boolean
+  errorMessage?: string
   onChange?: (value: string) => void
 }
 const DEFAULT_STYLE =
@@ -31,6 +32,9 @@ const TextPrompt = (props: TextPromptProps) => {
           value={props.value}
           placeholder={props.placeholder}
         />
+      </Conditional>
+      <Conditional condition={props.errorMessage != null}>
+        <div className={'text-red-500 text-md'}>{props.errorMessage}</div>
       </Conditional>
     </div>
   )

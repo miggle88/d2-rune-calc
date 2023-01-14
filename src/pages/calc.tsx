@@ -1,5 +1,5 @@
+import Checkbox from '@/components/common/Checkbox'
 import useUserSession from '@/hooks/useUserSession'
-import profiles from '@/pages/profiles'
 import { trpc } from '@/utils/trpc'
 import { GetServerSidePropsContext } from 'next'
 import slugify from 'slugify'
@@ -150,15 +150,11 @@ const Calc: NextPage<CalcContext> = (context) => {
           </Conditional>
           <div className={'p-3 text-2xl'}>Runes Collected</div>
           <div className={'flex flex-row justify-center'}>
-            <input
-              type={'checkbox'}
+            <Checkbox
               checked={zeroQuantityVisibility}
-              className={
-                'text-red-600 bg-red-800 border-red-500 border-2 rounded p-3 focus:border-red-500 focus:ring-0'
-              }
-              onChange={(e) => setZeroQuantityVisibility(e.target.checked)}
+              onChange={(isChecked) => setZeroQuantityVisibility(isChecked)}
+              label={'Show Zero Quantities'}
             />
-            <span className={'text-xl px-3 py-1 text-center align-middle'}>Show Zero Quantities</span>
             <div className={'pr-3'} />
             <Button
               className={''}

@@ -1,6 +1,7 @@
 import logRequest from '@/server/middlewares/logRequest'
 import authenticate from '@/server/middlewares/logRequest'
 import { t } from '@/server/trpc'
+import { CharacterClass } from '@/types'
 import { z } from 'zod'
 
 export const profilesRouter = t.router({
@@ -9,6 +10,7 @@ export const profilesRouter = t.router({
     .use(authenticate)
     .query(async ({ ctx }) => {
       const profiles = await ctx.prisma.characterProfile.findMany({
+        orderBy: [{ isStarred: 'desc' }, { name: 'asc' }],
         where: {
           userId: ctx.session.userId,
         },
@@ -23,8 +25,7 @@ export const profilesRouter = t.router({
     .input(
       z.object({
         name: z.string().min(1).max(100),
-        level: z.number().min(1).max(99),
-        class: z.string().min(1).max(50),
+        class: z.nativeEnum(CharacterClass),
         ladder: z.boolean().default(false),
         hardcore: z.boolean().default(false),
       })
@@ -45,7 +46,6 @@ export const profilesRouter = t.router({
         data: {
           userId: ctx.session.userId,
           name: input.name,
-          level: input.level,
           class: input.class,
           ladder: input.ladder,
           hardcore: input.hardcore,
@@ -53,5 +53,36 @@ export const profilesRouter = t.router({
       })
 
       return profile
+    }),
+
+  favoriteProfile: t.procedure
+    .use(logRequest)
+    .use(authenticate)
+    .input(z.object({ id: z.number(), isStarred: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const profile = await ctx.prisma.characterProfile.updateMany({
+        where: {
+          id: input.id,
+          userId: ctx.session.userId,
+        },
+        data: {
+          isStarred: input.isStarred,
+        },
+      })
+
+      return profile
+    }),
+
+  deleteProfile: t.procedure
+    .use(logRequest)
+    .use(authenticate)
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.characterProfile.deleteMany({
+        where: {
+          id: input.id,
+          userId: ctx.session.userId,
+        },
+      })
     }),
 })
