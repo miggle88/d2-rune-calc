@@ -41,9 +41,15 @@ export enum ItemSubType {
   Bow = 'Bow',
   Claw = 'Claw',
   Hammer = 'Hammer',
+  Mace = 'Mace',
+  Polearm = 'Polearm',
   Scepter = 'Scepter',
+  Staff = 'Staff',
   Sword = 'Sword',
+  Wand = 'Wand',
 }
+
+export const AllSubTypes = Object.values(ItemSubType)
 
 export type CalculatorParameters = {
   minRune: Rune
