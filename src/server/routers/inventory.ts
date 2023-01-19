@@ -93,6 +93,28 @@ export const inventoryRouter = t.router({
           })
         }
       }
-      return { message: 'ok' }
+    }),
+  clearInventory: t.procedure
+    .use(logRequest)
+    .use(authenticate)
+    .input(z.object({ profileId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      // Validate that the profile belongs to the user
+      const profile = await ctx.prisma.characterProfile.findFirst({
+        where: {
+          userId: ctx.session.userId,
+          id: input.profileId,
+        },
+      })
+
+      if (!profile) {
+        throw new Error('Inventory not found')
+      }
+
+      await ctx.prisma.runeInventory.deleteMany({
+        where: {
+          profileId: input.profileId,
+        },
+      })
     }),
 })

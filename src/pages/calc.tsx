@@ -72,6 +72,13 @@ const Calc: NextPage<CalcContext> = (context) => {
     },
   })
 
+  const clearInventory = trpc.clearInventory.useMutation({
+    onSuccess: () => {
+      setPendingUpdates({})
+      setSelectedInventory({})
+    },
+  })
+
   useEffect(() => {
     if (selectedProfile !== null) {
       fetchInventory.refetch()
@@ -194,8 +201,15 @@ const Calc: NextPage<CalcContext> = (context) => {
                 label={'Show Zero Quantities'}
               />
               <div className={'pr-3'} />
-              <Button className={''}>
-                <span className={'text-red-400 text-xl p-2'}>Reset Rune Inventory</span>
+              <Button
+                className={''}
+                onClick={() => {
+                  if (selectedProfile) {
+                    clearInventory.mutate({ profileId: selectedProfile.id })
+                  }
+                }}
+              >
+                <span className={'text-red-400 text-xl p-2'}>Clear Inventory</span>
               </Button>
             </div>
             <RuneInventoryDisplay
