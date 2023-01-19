@@ -7,14 +7,19 @@ import TextPrompt from '@/components/common/TextPrompt'
 import Conditional from '@/components/layout/Conditional'
 import MasterDetailLayout from '@/components/layout/MasterDetailLayout'
 import CharacterProfileList from '@/components/profiles/CharacterProfileList'
-import { CharacterClass, CharacterProfile } from '@/types'
+import { CharacterClass, CharacterProfile, RuneInventory } from '@/types'
 import { trpc } from '@/utils/trpc'
 import type { NextPage } from 'next'
 import React, { useEffect, useState } from 'react'
 
+const UPDATE_TIMER_DELAY = 500
+
 const Profiles: NextPage = () => {
   const [availableProfiles, setAvailableProfiles] = useState<CharacterProfile[]>([])
   const [selectedProfile, setSelectedProfile] = useState<CharacterProfile | null>(null)
+  const [selectedInventory, setSelectedInventory] = useState<RuneInventory>({})
+  const [pendingUpdates, setPendingUpdates] = useState<RuneInventory>({})
+  const [updateTimerId, setUpdateTimerId] = useState<NodeJS.Timeout | null>(null)
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
   const [createProfileName, setCreateProfileName] = useState<string>('')
   const [createProfileClass, setCreateProfileClass] = useState<CharacterClass>(CharacterClass.Amazon)
@@ -44,6 +49,16 @@ const Profiles: NextPage = () => {
     },
   })
 
+  const fetchInventory = trpc.getInventory.useQuery(
+    { profileId: selectedProfile?.id ?? 0 },
+    {
+      enabled: !!selectedProfile,
+      onSuccess: (data) => {
+        setSelectedInventory(data)
+      },
+    }
+  )
+
   const createProfile = trpc.createProfile.useMutation({
     onSuccess: () => {
       fetchProfiles.refetch()
@@ -62,11 +77,44 @@ const Profiles: NextPage = () => {
     },
   })
 
+  const updateInventory = trpc.updateInventory.useMutation({
+    onSuccess: () => {
+      setPendingUpdates({})
+    },
+  })
+
   useEffect(() => {
-    if (!selectedProfile && availableProfiles.length > 0) {
+    if (selectedProfile !== null) {
+      fetchInventory.refetch()
+    } else {
+      setSelectedInventory({})
+    }
+  }, [selectedProfile])
+
+  useEffect(() => {
+    if (selectedProfile === null && availableProfiles.length > 0) {
       setSelectedProfile(availableProfiles[0])
     }
   }, [availableProfiles])
+
+  useEffect(() => {
+    // Clear the existing timer, if queued
+    if (updateTimerId) {
+      clearTimeout(updateTimerId)
+      setUpdateTimerId(null)
+    }
+
+    // If there are pending updates
+    if (Object.keys(pendingUpdates).length > 0) {
+      const timerId = setTimeout(() => {
+        if (selectedProfile) {
+          updateInventory.mutate({ profileId: selectedProfile.id, inventory: pendingUpdates })
+        }
+      }, UPDATE_TIMER_DELAY)
+
+      setUpdateTimerId(timerId)
+    }
+  }, [pendingUpdates])
 
   return (
     <MasterDetailLayout>
@@ -97,7 +145,14 @@ const Profiles: NextPage = () => {
             <div className={'text-center text-red-500 p-3 text-2xl'}>
               {selectedProfile?.name}&apos;s Runes Collected
             </div>
-            <RuneInventoryDisplay inventory={selectedProfile?.runeInventory ?? {}} showZeroQuantities={true} />
+            <RuneInventoryDisplay
+              inventory={selectedInventory}
+              showZeroQuantities={true}
+              onChange={(key, newAmount) => {
+                setSelectedInventory((prev) => ({ ...prev, [key]: newAmount }))
+                setPendingUpdates({ ...pendingUpdates, [key]: newAmount })
+              }}
+            />
           </Conditional>
           <Conditional condition={selectedProfile == null}>
             <div>No Profile Selected</div>

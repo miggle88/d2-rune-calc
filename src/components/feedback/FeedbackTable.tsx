@@ -45,10 +45,7 @@ const FeedbackTable = (props: FeedbackTableProps) => {
                   <td>{row.solution}</td>
                   <td>{row.createdAt.toLocaleDateString()}</td>
                   <td>
-                    <Button
-                      className={'text-red-500 hover:text-red-300 p-3'}
-                      onClick={() => props.onDelete && props.onDelete(row.id)}
-                    >
+                    <Button className={'text-red-500 hover:text-red-300 p-3'} onClick={() => props.onDelete?.(row.id)}>
                       <TrashCanSvg width={24} height={24} />
                     </Button>
                   </td>

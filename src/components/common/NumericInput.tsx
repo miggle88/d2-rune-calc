@@ -16,13 +16,13 @@ type NumericInputProps = {
 const NumericInput = (props: NumericInputProps) => {
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.value) {
-      props.onChange && props.onChange(props.minValue ?? 0)
+      props.onChange?.(props.minValue ?? 0)
       return
     }
 
     const newValue = parseInt(e.target.value, 10)
     if (!Number.isInteger(newValue)) {
-      props.onInvalid && props.onInvalid(e.target.value)
+      props.onInvalid?.(e.target.value)
       return
     }
 

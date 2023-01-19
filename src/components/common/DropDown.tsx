@@ -8,7 +8,7 @@ type DropDownProps = {
 }
 
 const DEFAULT_STYLE =
-  'border-gray-500 border-2 bg-gray-700 text-white focus:border-gray-200 focus:appearance-none focus:ring-0'
+  'border-red-600 border-2 rounded bg-black text-red-400 focus:appearance-none focus:ring-0 focus:border-red-400 min-h-[48px]'
 
 const DropDown = (props: DropDownProps) => {
   return (
@@ -16,7 +16,7 @@ const DropDown = (props: DropDownProps) => {
       <select
         className={`${DEFAULT_STYLE} ${props.className}`}
         value={props.value}
-        onChange={(e) => props.onChange && props.onChange(e.target.value)}
+        onChange={(e) => props.onChange?.(e.target.value)}
       >
         {props.children}
       </select>

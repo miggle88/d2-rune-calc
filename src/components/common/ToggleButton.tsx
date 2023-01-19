@@ -13,12 +13,7 @@ const ToggleButton = (props: ToggleButtonProps) => {
 
   return (
     <div>
-      <button
-        className={style}
-        onClick={() => {
-          props.onChange && props.onChange(!props.isChecked)
-        }}
-      >
+      <button className={style} onClick={() => props.onChange?.(!props.isChecked)}>
         {props.children}
       </button>
     </div>
