@@ -26,9 +26,7 @@ const RuneInventoryDisplay = (props: RuneInventoryProps) => {
               key={key}
               name={key}
               amount={amount}
-              onChange={(newAmount) => {
-                props.onChange && props.onChange(key, newAmount)
-              }}
+              onChange={(newAmount) => props.onChange?.(key, newAmount)}
             />
           )
         })}

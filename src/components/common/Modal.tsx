@@ -22,18 +22,14 @@ const Modal = (props: ModalProps) => {
       <div className={'flex flex-row'}>
         <div className={'text-center text-red-500 p-3 text-2xl w-full'}>{props.title}</div>
         <div>
-          <Button className={'w-[48px]'} onClick={() => props.onClose && props.onClose()}>
+          <Button className={'w-[48px]'} onClick={() => props.onClose?.()}>
             ❌
           </Button>
         </div>
       </div>
       <div className={'p-3'}>{props.children}</div>
       <div className={'text-center'}>
-        <Button
-          className={'min-w-[120px]'}
-          disabled={props.disabled}
-          onClick={() => props.onSubmit && props.onSubmit()}
-        >
+        <Button className={'min-w-[120px]'} disabled={props.disabled} onClick={() => props.onSubmit?.()}>
           {props.buttonText ?? 'Close'}
         </Button>
       </div>

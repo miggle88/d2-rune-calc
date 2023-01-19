@@ -15,7 +15,7 @@ const MultiSelectGroup = (props: MultiSelectGroupProps) => {
     } else {
       selected = selected.filter((value) => value !== choice)
     }
-    props.onChange && props.onChange(selected)
+    props.onChange?.(selected)
   }
 
   return (

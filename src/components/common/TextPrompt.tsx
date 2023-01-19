@@ -21,14 +21,14 @@ const TextPrompt = (props: TextPromptProps) => {
           type={'text'}
           className={`${DEFAULT_STYLE} ${props.className}`}
           value={props.value}
-          onChange={(e) => props.onChange && props.onChange(e.target.value)}
+          onChange={(e) => props.onChange?.(e.target.value)}
           placeholder={props.placeholder}
         />
       </Conditional>
       <Conditional condition={!!props.isTextArea}>
         <textarea
           className={`${DEFAULT_STYLE} ${props.className}`}
-          onChange={(e) => props.onChange && props.onChange(e.target.value)}
+          onChange={(e) => props.onChange?.(e.target.value)}
           value={props.value}
           placeholder={props.placeholder}
         />
