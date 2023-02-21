@@ -2,7 +2,7 @@ import { ItemSubType, ItemType, Runeword } from '@/types'
 
 const WandWeaponsRunewords: Runeword[] = [
   {
-    name: 'Pattern',
+    name: 'White',
     types: [ItemType.Weapon],
     subTypes: [ItemSubType.Wand],
     minLevel: 35,

@@ -19,7 +19,7 @@ const MultiSelectGroup = (props: MultiSelectGroupProps) => {
   }
 
   return (
-    <div className={'flex flex-row justify-evenly p-2'}>
+    <div className={'flex flex-row justify-evenly flex-wrap p-2'}>
       {props.choices.map((choice) => {
         return (
           <SelectableChoice
